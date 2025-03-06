@@ -16,23 +16,35 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <div className="w-64 bg-white shadow-lg h-full">
-      <div className="p-4">
-        <h1 className="text-2xl font-bold mb-8">AgriHealth Dashboard</h1>
-        <nav>
+    <div className="h-full bg-white shadow-lg">
+      <div className="flex flex-col h-full">
+        <div className="p-6 border-b">
+          <h1 className="text-2xl font-bold text-slate">AgriHealth Dashboard</h1>
+        </div>
+        
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full text-left p-3 mb-2 rounded flex items-center ${
-                activeTab === item.id ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100'
+              className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-150 ${
+                activeTab === item.id
+                  ? 'bg-teal text-white'
+                  : 'text-slate hover:bg-gray-100'
               }`}
             >
-              <span className="mr-3">{item.icon}</span>
+              <span className="mr-3 text-lg">{item.icon}</span>
               {item.label}
             </button>
           ))}
         </nav>
+
+        <div className="p-4 border-t">
+          <div className="text-sm text-gray-600">
+            <p>Agricultural Workers Study</p>
+            <p className="mt-1">Updated: March 2025</p>
+          </div>
+        </div>
       </div>
     </div>
   );
