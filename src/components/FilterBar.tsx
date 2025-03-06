@@ -1,44 +1,57 @@
-import { ChevronDown } from 'lucide-react';
+import React from 'react';
 
 const FilterBar: React.FC = () => {
   return (
-    <div className="flex items-center justify-between mb-6 p-4 bg-white rounded-lg shadow-md sticky top-0 z-10">
-      <div className="flex space-x-4">
-        {['Age Range', 'Employment Status', 'Socioeconomic Status'].map((label) => (
-          <div key={label}>
-            <label className="block text-sm text-slate mb-1">{label}</label>
-            <div className="relative">
-              <select className="appearance-none bg-white border border-lightSlate rounded py-1 px-3 text-sm text-slate focus:ring-teal focus:border-teal transition-all">
-                <option>All</option>
-                {label === 'Age Range' && (
-                  <>
-                    <option>20-40 years</option>
-                    <option>41-60 years</option>
-                    <option>60+ years</option>
-                  </>
-                )}
-                {label === 'Employment Status' && (
-                  <>
-                    <option>Permanent</option>
-                    <option>Seasonal</option>
-                  </>
-                )}
-                {label === 'Socioeconomic Status' && (
-                  <>
-                    <option>Low</option>
-                    <option>Medium</option>
-                    <option>High</option>
-                  </>
-                )}
-              </select>
-              <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate transition-transform hover:rotate-180" />
-            </div>
-          </div>
-        ))}
+    <div className="bg-white p-6 rounded-lg shadow mb-6">
+      <div className="grid grid-cols-3 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Age Range
+          </label>
+          <select className="w-full border rounded-md p-2">
+            <option value="">All</option>
+            <option value="18-30">18-30</option>
+            <option value="31-50">31-50</option>
+            <option value="51+">51+</option>
+          </select>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Employment Status
+          </label>
+          <select className="w-full border rounded-md p-2">
+            <option value="">All</option>
+            <option value="full-time">Full Time</option>
+            <option value="seasonal">Seasonal</option>
+            <option value="contract">Contract</option>
+          </select>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Socioeconomic Status
+          </label>
+          <select className="w-full border rounded-md p-2">
+            <option value="">All</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
       </div>
-      <button className="bg-coral hover:bg-coral/90 text-white py-1 px-4 rounded text-sm transition-all hover:scale-105">
-        Apply Filters
-      </button>
+      
+      <div className="mt-4">
+        <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Apply Filters
+        </button>
+      </div>
+      
+      <div className="mt-4 text-sm text-gray-600">
+        Agricultural Workers Study
+        <br />
+        Updated: March 2025
+      </div>
     </div>
   );
 };

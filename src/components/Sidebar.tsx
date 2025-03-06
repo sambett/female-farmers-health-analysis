@@ -1,4 +1,4 @@
-import { Calendar, Activity, Droplets, Shield, BarChart2, Brain } from 'lucide-react';
+import React from 'react';
 
 interface SidebarProps {
   activeTab: string;
@@ -6,43 +6,33 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: Calendar },
-    { id: 'health', label: 'Health Outcomes', icon: Activity },
-    { id: 'exposure', label: 'Exposures', icon: Droplets },
-    { id: 'protection', label: 'Protection', icon: Shield },
-    { id: 'analytics', label: 'Analytics', icon: BarChart2 },
-    { id: 'ai-prediction', label: 'AI Prediction', icon: Brain },
+  const navItems = [
+    { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'health-outcomes', label: 'Health Outcomes', icon: '🏥' },
+    { id: 'exposures', label: 'Exposures', icon: '⚕️' },
+    { id: 'protection', label: 'Protection', icon: '🛡️' },
+    { id: 'analytics', label: 'Analytics', icon: '📈' },
+    { id: 'ai-prediction', label: 'AI Prediction', icon: '🤖' }
   ];
 
   return (
-    <div className="w-64 bg-slate text-white p-4 flex flex-col h-screen">
-      <div className="text-center mb-8">
-        <h1 className="text-xl font-bold tracking-tight" style={{ textShadow: '0 0 5px rgba(43, 106, 110, 0.5)' }}>
-          AgriHealth Dashboard
-        </h1>
-      </div>
-      <nav className="flex-1">
-        <ul>
-          {tabs.map(({ id, label, icon: Icon }) => (
-            <li
-              key={id}
-              className={`mb-2 rounded-lg ${activeTab === id ? 'bg-teal animate-pulse-slow' : 'hover:bg-teal/80'} transition-colors`}
+    <div className="w-64 bg-white shadow-lg h-full">
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-8">AgriHealth Dashboard</h1>
+        <nav>
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`w-full text-left p-3 mb-2 rounded flex items-center ${
+                activeTab === item.id ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100'
+              }`}
             >
-              <button
-                onClick={() => setActiveTab(id)}
-                className="flex items-center p-3 w-full text-left text-sm font-medium"
-              >
-                <Icon size={18} className="mr-3" />
-                {label}
-              </button>
-            </li>
+              <span className="mr-3">{item.icon}</span>
+              {item.label}
+            </button>
           ))}
-        </ul>
-      </nav>
-      <div className="text-xs text-lightSlate pt-4 border-t border-lightSlate/20">
-        <p>Agricultural Workers Study</p>
-        <p>Updated: March 2025</p>
+        </nav>
       </div>
     </div>
   );
