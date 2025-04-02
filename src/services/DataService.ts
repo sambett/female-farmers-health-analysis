@@ -3,12 +3,8 @@ import * as XLSX from 'xlsx';
 import { HealthRecord } from '../types';
 
 // Define a more flexible record type for processing raw data
-<<<<<<< HEAD
-type RawExcelRecord = Record<string, unknown>;
-=======
 // Using Record<string, unknown> for type safety
 type ProcessableRecord = Record<string, unknown>;
->>>>>>> 3cefcbf169b52bcc53ea47a4fe7780b3de47bb48
 
 // Function to load data from an Excel file
 export const loadData = async (filePath: string): Promise<HealthRecord[]> => {
@@ -58,7 +54,7 @@ export const loadData = async (filePath: string): Promise<HealthRecord[]> => {
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
       defval: '', // Default value for empty cells
       raw: false  // Convert values to string
-    }) as RawExcelRecord[];
+    }) as ProcessableRecord[];
     
     // Process data to handle specific fields
     return processData(jsonData);
@@ -71,7 +67,7 @@ export const loadData = async (filePath: string): Promise<HealthRecord[]> => {
 };
 
 // Process the data to handle specific formats and clean values
-const processData = (data: RawExcelRecord[]): HealthRecord[] => {
+const processData = (data: ProcessableRecord[]): HealthRecord[] => {
   return data.map(record => {
     // Create a processed record with the correct type
     const processedRecord: HealthRecord = {};

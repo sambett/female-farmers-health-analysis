@@ -77,7 +77,7 @@ const EnhancedRiskPredictionTool: React.FC<EnhancedRiskPredictionToolProps> = ({
   const [employmentStatusOptions, setEmploymentStatusOptions] = useState<string[]>([]);
   
   // Store the trainModel function in a ref to avoid dependency cycles
-  const trainModelRef = useRef<(trainingData: HealthRecord[]) => void>();
+  const trainModelRef = useRef<(trainingData: HealthRecord[]) => void>(() => {});  // Initialize with empty function
   
   // Set up the trainModelRef whenever the dependencies change
   useEffect(() => {
