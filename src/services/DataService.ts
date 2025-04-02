@@ -3,8 +3,8 @@ import * as XLSX from 'xlsx';
 import { HealthRecord } from '../types';
 
 // Define a more flexible record type for processing raw data
-type RawRecord = Record<string, unknown>;
-type ProcessableRecord = Record<string, any>;
+// Using Record<string, unknown> for type safety
+type ProcessableRecord = Record<string, unknown>;
 
 // Function to load data from an Excel file
 export const loadData = async (filePath: string): Promise<HealthRecord[]> => {

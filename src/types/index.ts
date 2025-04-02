@@ -67,3 +67,9 @@ export interface SpecificRisks {
   neurological: number;
   overall: number;
 }
+
+// Machine Learning Model Types
+export interface FeatureImportance {
+  feature: string;
+  importance: number;
+}
