@@ -87,36 +87,59 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
         
         // Process the data to ensure all needed fields are properly formatted
         const processedData = jsonData.map((record: Record<string, unknown>): HealthRecord => {
-          // Create a copy of the record to avoid modifying the original
-          const processedRecord = { ...record };
+          // Create a new record of the correct type
+          const processedRecord: HealthRecord = {};
+
+          // Copy numeric fields
+          if (typeof record['N°'] !== 'undefined') processedRecord['N°'] = Number(record['N°']);
+          if (typeof record['Age'] !== 'undefined') processedRecord['Age'] = Number(record['Age']);
+          if (typeof record['Nb enfants'] !== 'undefined') processedRecord['Nb enfants'] = Number(record['Nb enfants']);
+          if (typeof record['H travail / jour'] !== 'undefined') processedRecord['H travail / jour'] = Number(record['H travail / jour']);
+          if (typeof record['J travail / Sem'] !== 'undefined') processedRecord['J travail / Sem'] = Number(record['J travail / Sem']);
+          if (typeof record['Ancienneté agricole'] !== 'undefined') processedRecord['Ancienneté agricole'] = Number(record['Ancienneté agricole']);
+          if (typeof record['TAS'] !== 'undefined') processedRecord['TAS'] = Number(record['TAS']);
+          if (typeof record['TAD'] !== 'undefined') processedRecord['TAD'] = Number(record['TAD']);
+          
+          // Copy string fields
+          if (typeof record['Situation maritale'] !== 'undefined') processedRecord['Situation maritale'] = String(record['Situation maritale']);
+          if (typeof record['Niveau socio-économique'] !== 'undefined') processedRecord['Niveau socio-économique'] = String(record['Niveau socio-économique']);
+          if (typeof record['Statut'] !== 'undefined') processedRecord['Statut'] = String(record['Statut']);
+          if (typeof record['Masque pour pesticides'] !== 'undefined') processedRecord['Masque pour pesticides'] = String(record['Masque pour pesticides']);
+          if (typeof record['Bottes'] !== 'undefined') processedRecord['Bottes'] = String(record['Bottes']);
+          if (typeof record['Gants'] !== 'undefined') processedRecord['Gants'] = String(record['Gants']);
+          if (typeof record['Casquette/Mdhalla'] !== 'undefined') processedRecord['Casquette/Mdhalla'] = String(record['Casquette/Mdhalla']);
+          if (typeof record['Manteau imperméable'] !== 'undefined') processedRecord['Manteau imperméable'] = String(record['Manteau imperméable']);
           
           // Ensure health issue fields are strings
           ['Troubles cardio-respiratoires', 'Troubles cognitifs', 
            'Troubles neurologiques', 'Troubles cutanés/phanères', 
            'Autres plaintes'].forEach(field => {
-            if (processedRecord[field] === undefined || processedRecord[field] === null) {
+            const value = record[field];
+            if (value === undefined || value === null) {
               processedRecord[field] = '';
             } else {
-              processedRecord[field] = processedRecord[field].toString();
+              processedRecord[field] = String(value);
             }
           });
           
           // Ensure chemical fields are strings
           ['Produits chimiques utilisés', 'Engrais utilisés', 
            'Produits biologiques utilisés'].forEach(field => {
-            if (processedRecord[field] === undefined || processedRecord[field] === null) {
+            const value = record[field];
+            if (value === undefined || value === null) {
               processedRecord[field] = '';
             } else {
-              processedRecord[field] = processedRecord[field].toString();
+              processedRecord[field] = String(value);
             }
           });
           
           // Ensure task field is a string
-          if (processedRecord['Tâches effectuées'] === undefined || 
-              processedRecord['Tâches effectuées'] === null) {
-            processedRecord['Tâches effectuées'] = '';
+          const taskField = 'Tâches effectuées';
+          const taskValue = record[taskField];
+          if (taskValue === undefined || taskValue === null) {
+            processedRecord[taskField] = '';
           } else {
-            processedRecord['Tâches effectuées'] = processedRecord['Tâches effectuées'].toString();
+            processedRecord[taskField] = String(taskValue);
           }
           
           return processedRecord;

@@ -5,14 +5,8 @@ import * as natural from 'natural';
 import stopwords from './stopwords-fr';
 import { StructuredTextData, RiskFactor, HealthRecord } from '../types';
 
-// Check if window.fs is defined - add this to avoid TypeScript errors
-declare global {
-  interface Window {
-    fs?: {
-      readFile(path: string, options?: { encoding?: string }): Promise<Uint8Array | string>;
-    };
-  }
-}
+// Import RelationData from types for internal usage
+import type { RelationData } from '../types';
 
 // Tokenizer for French text
 const tokenizer = new natural.WordTokenizer();

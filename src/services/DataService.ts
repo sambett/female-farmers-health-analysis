@@ -2,14 +2,9 @@
 import * as XLSX from 'xlsx';
 import { HealthRecord } from '../types';
 
-// Declare window.fs type
-declare global {
-  interface Window {
-    fs?: {
-      readFile(path: string, options?: { encoding?: string }): Promise<Uint8Array | string>;
-    };
-  }
-}
+// Define a more flexible record type for processing raw data
+type RawRecord = Record<string, unknown>;
+type ProcessableRecord = Record<string, any>;
 
 // Function to load data from an Excel file
 export const loadData = async (filePath: string): Promise<HealthRecord[]> => {
@@ -59,7 +54,7 @@ export const loadData = async (filePath: string): Promise<HealthRecord[]> => {
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
       defval: '', // Default value for empty cells
       raw: false  // Convert values to string
-    });
+    }) as ProcessableRecord[];
     
     // Process data to handle specific fields
     return processData(jsonData);
@@ -72,37 +67,58 @@ export const loadData = async (filePath: string): Promise<HealthRecord[]> => {
 };
 
 // Process the data to handle specific formats and clean values
-const processData = (data: Record<string, unknown>[]): HealthRecord[] => {
+const processData = (data: ProcessableRecord[]): HealthRecord[] => {
   return data.map(record => {
-    const processedRecord = { ...record };
+    // Create a processed record with the correct type
+    const processedRecord: HealthRecord = {};
+    
+    // Copy over numeric fields
+    if (record['N°']) processedRecord['N°'] = Number(record['N°']);
+    if (record['Age']) processedRecord['Age'] = Number(record['Age']);
+    if (record['Nb enfants']) processedRecord['Nb enfants'] = Number(record['Nb enfants']);
+    if (record['H travail / jour']) processedRecord['H travail / jour'] = Number(record['H travail / jour']);
+    if (record['J travail / Sem']) processedRecord['J travail / Sem'] = Number(record['J travail / Sem']);
+    if (record['Ancienneté agricole']) processedRecord['Ancienneté agricole'] = Number(record['Ancienneté agricole']);
+    if (record['TAS']) processedRecord['TAS'] = Number(record['TAS']);
+    if (record['TAD']) processedRecord['TAD'] = Number(record['TAD']);
+    
+    // Copy string fields
+    if (record['Situation maritale']) processedRecord['Situation maritale'] = String(record['Situation maritale']);
+    if (record['Niveau socio-économique']) processedRecord['Niveau socio-économique'] = String(record['Niveau socio-économique']);
+    if (record['Statut']) processedRecord['Statut'] = String(record['Statut']);
+    if (record['Masque pour pesticides']) processedRecord['Masque pour pesticides'] = String(record['Masque pour pesticides']);
+    if (record['Bottes']) processedRecord['Bottes'] = String(record['Bottes']);
+    if (record['Gants']) processedRecord['Gants'] = String(record['Gants']);
+    if (record['Casquette/Mdhalla']) processedRecord['Casquette/Mdhalla'] = String(record['Casquette/Mdhalla']);
+    if (record['Manteau imperméable']) processedRecord['Manteau imperméable'] = String(record['Manteau imperméable']);
     
     // Ensure health issue fields are strings
     ['Troubles cardio-respiratoires', 'Troubles cognitifs', 
      'Troubles neurologiques', 'Troubles cutanés/phanères', 
      'Autres plaintes'].forEach(field => {
-      if (processedRecord[field] === undefined || processedRecord[field] === null) {
+      if (record[field] === undefined || record[field] === null) {
         processedRecord[field] = '';
       } else {
-        processedRecord[field] = processedRecord[field].toString();
+        processedRecord[field] = String(record[field]);
       }
     });
     
     // Ensure chemical fields are strings
     ['Produits chimiques utilisés', 'Engrais utilisés', 
      'Produits biologiques utilisés'].forEach(field => {
-      if (processedRecord[field] === undefined || processedRecord[field] === null) {
+      if (record[field] === undefined || record[field] === null) {
         processedRecord[field] = '';
       } else {
-        processedRecord[field] = processedRecord[field].toString();
+        processedRecord[field] = String(record[field]);
       }
     });
     
     // Ensure task field is a string
-    if (processedRecord['Tâches effectuées'] === undefined || 
-        processedRecord['Tâches effectuées'] === null) {
+    if (record['Tâches effectuées'] === undefined || 
+        record['Tâches effectuées'] === null) {
       processedRecord['Tâches effectuées'] = '';
     } else {
-      processedRecord['Tâches effectuées'] = processedRecord['Tâches effectuées'].toString();
+      processedRecord['Tâches effectuées'] = String(record['Tâches effectuées']);
     }
     
     return processedRecord;
@@ -198,7 +214,7 @@ export const getUniqueValues = (data: HealthRecord[], field: string): string[] =
       if (typeof value === 'string' && value.includes(',')) {
         value.split(',').forEach(v => valueSet.add(v.trim()));
       } else {
-        valueSet.add(value.toString().trim());
+        valueSet.add(String(value).trim());
       }
     }
   });

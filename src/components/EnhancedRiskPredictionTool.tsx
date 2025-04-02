@@ -50,7 +50,7 @@ const EnhancedRiskPredictionTool: React.FC<EnhancedRiskPredictionToolProps> = ({
       data.forEach(record => {
         const chemicalText = record['Produits chimiques utilisés'] || '';
         if (chemicalText) {
-          const terms = chemicalText.toLowerCase().split(/[,;\/.\s-]+/);
+          const terms = chemicalText.toLowerCase().split(/[,;\s-]+/);
           terms.forEach(term => {
             const trimmed = term.trim();
             if (trimmed && trimmed.length > 2) chemicals.add(trimmed);
@@ -63,7 +63,7 @@ const EnhancedRiskPredictionTool: React.FC<EnhancedRiskPredictionToolProps> = ({
       data.forEach(record => {
         const taskText = record['Tâches effectuées'] || '';
         if (taskText) {
-          const terms = taskText.toLowerCase().split(/[,;\/.\s-]+/);
+          const terms = taskText.toLowerCase().split(/[,;\s-]+/);
           terms.forEach(term => {
             const trimmed = term.trim();
             if (trimmed && trimmed.length > 2) taskSet.add(trimmed);
@@ -143,7 +143,7 @@ const EnhancedRiskPredictionTool: React.FC<EnhancedRiskPredictionToolProps> = ({
     
     const factors: string[] = [];
     const recommendations: string[] = [];
-    const matched: TextRiskFactor[] = [];
+    const matched: RiskFactor[] = [];
     
     // Age-related risk factors
     if (age > 50) {
@@ -477,7 +477,7 @@ const EnhancedRiskPredictionTool: React.FC<EnhancedRiskPredictionToolProps> = ({
                   onChange={e => setHasSkinConditions(e.target.checked)}
                   className="mr-2"
                 />
-                Antécédents de problèmes cutamés
+                Antécédents de problèmes cutanés
               </label>
               <label className="flex items-center">
                 <input 
