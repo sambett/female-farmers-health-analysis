@@ -18,26 +18,26 @@ const Dashboard: React.FC = () => {
           <FilterBar />
           
           <div className="mt-4 bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-4">Tableau de Bord Agricole</h2>
-            <p>Bienvenue dans le tableau de bord d'analyse des données des agricultrices.</p>
-            <p className="mt-2">Tab actif: {activeTab}</p>
+            <h2 className="text-xl font-bold mb-4">Agricultural Health Dashboard</h2>
+            <p>Welcome to the female farmers health data analysis dashboard.</p>
+            <p className="mt-2">Active tab: {activeTab}</p>
             
             <div className="mt-4 grid grid-cols-2 gap-4">
               <div className="border p-3 rounded bg-blue-50">
-                <h3 className="font-bold">Problèmes de Santé</h3>
-                <p className="text-sm">Analyse des troubles cardio-respiratoires, neurologiques, cognitifs et cutanés.</p>
+                <h3 className="font-bold">Health Issues</h3>
+                <p className="text-sm">Analysis of cardio-respiratory, neurological, cognitive, and skin issues.</p>
               </div>
               <div className="border p-3 rounded bg-green-50">
-                <h3 className="font-bold">Expositions</h3>
-                <p className="text-sm">Analyse des expositions aux produits chimiques et biologiques.</p>
+                <h3 className="font-bold">Exposures</h3>
+                <p className="text-sm">Analysis of chemical and biological product exposures.</p>
               </div>
               <div className="border p-3 rounded bg-yellow-50">
                 <h3 className="font-bold">Protection</h3>
-                <p className="text-sm">Analyse de l'utilisation d'équipements de protection.</p>
+                <p className="text-sm">Analysis of protective equipment usage.</p>
               </div>
               <div className="border p-3 rounded bg-purple-50">
-                <h3 className="font-bold">Prédiction IA</h3>
-                <p className="text-sm">Outil de prédiction des risques basé sur l'analyse de texte.</p>
+                <h3 className="font-bold">AI Prediction</h3>
+                <p className="text-sm">Risk prediction tool based on text analysis.</p>
               </div>
             </div>
           </div>

@@ -50,7 +50,7 @@ const FilterBar: React.FC = () => {
       <div className="mt-4 text-sm text-gray-600">
         Agricultural Workers Study
         <br />
-        Updated: March 2025
+        Updated: April 2025
       </div>
     </div>
   );
