@@ -445,6 +445,7 @@ interface MLModel {
   catFeatureMap: Record<string, Record<string, number>>;
   importance: {feature: string, importance: number}[];
   confidenceInterval: number;
+  accuracy?: number;
   featureScaling: Record<string, {min: number, max: number, mean: number}>;
 }
 
@@ -706,125 +707,124 @@ function predictRisksWithRules(input: PredictionInput): PredictionResult {
     }
   });
   
-  // Cap risks at 100
-  respiratoryRisk = Math.min(Math.round(respiratoryRisk), 100);
-  skinRisk = Math.min(Math.round(skinRisk), 100);
-  neurologicalRisk = Math.min(Math.round(neurologicalRisk), 100);
-  overallRisk = Math.min(Math.round(overallRisk), 100);
-  
-  // Sort contributing factors by weight
-  contributingFactors.sort((a, b) => b.weight - a.weight);
-  
-  // Get top 3 contributing factors
-  const topContributingFactors = contributingFactors.slice(0, 3).map(factor => factor.factor);
-  
-  // Calculate confidence score based on input completeness
-  const totalFactors = input.exposures.length + input.protectionEquipment.length + input.medicalHistory.length + 3; // +3 for the fixed inputs
-  const confidenceScore = Math.min(Math.round((totalFactors / 10) * 100), 100);
-  
-  // Generate personalized recommendations
-  const recommendations: string[] = [];
-  
-  if (respiratoryRisk > 50) {
-    recommendations.push("Consider using respiratory protection (masks) when working with chemicals");
-  }
-  
-  if (skinRisk > 50) {
-    recommendations.push("Use protective gloves and clothing to reduce skin exposure to chemicals");
-  }
-  
-  if (input.workHoursPerDay > 8) {
-    recommendations.push("Take regular breaks and consider reducing daily exposure time");
-  }
-  
-  if (input.exposures.includes('pesticides') && input.exposures.length > 1) {
-    recommendations.push("Avoid mixing different types of chemicals to reduce cumulative exposure");
-  }
-  
-  if (neurologicalRisk > 60) {
-    recommendations.push("Schedule regular medical check-ups to monitor neurological health");
-  }
-  
-  // Return prediction result
-  return {
-    overallRisk,
-    respiratoryRisk,
-    skinRisk, 
-    neurologicalRisk,
-    confidenceScore,
-    topContributingFactors,
-    personalizedRecommendations: recommendations
-  };
+// Cap risks at 100
+respiratoryRisk = Math.min(Math.round(respiratoryRisk), 100);
+skinRisk = Math.min(Math.round(skinRisk), 100);
+neurologicalRisk = Math.min(Math.round(neurologicalRisk), 100);
+overallRisk = Math.min(Math.round(overallRisk), 100);
+
+// Sort contributing factors by weight
+contributingFactors.sort((a, b) => b.weight - a.weight);
+
+// Get top 3 contributing factors
+const topContributingFactors = contributingFactors.slice(0, 3).map(factor => factor.factor);
+
+// Calculate confidence score based on input completeness
+const totalFactors = input.exposures.length + input.protectionEquipment.length + input.medicalHistory.length + 3; // +3 for the fixed inputs
+const confidenceScore = Math.min(Math.round((totalFactors / 10) * 100), 100);
+
+// Generate personalized recommendations
+const recommendations: string[] = [];
+
+if (respiratoryRisk > 50) {
+  recommendations.push("Consider using respiratory protection (masks) when working with chemicals");
+}
+
+if (skinRisk > 50) {
+  recommendations.push("Use protective gloves and clothing to reduce skin exposure to chemicals");
+}
+
+if (input.workHoursPerDay > 8) {
+  recommendations.push("Take regular breaks and consider reducing daily exposure time");
+}
+
+if (input.exposures.includes('pesticides') && input.exposures.length > 1) {
+  recommendations.push("Avoid mixing different types of chemicals to reduce cumulative exposure");
+}
+
+if (neurologicalRisk > 60) {
+  recommendations.push("Schedule regular medical check-ups to monitor neurological health");
+}
+
+// Return prediction result
+return {
+  overallRisk,
+  respiratoryRisk,
+  skinRisk, 
+  neurologicalRisk,
+  confidenceScore,
+  topContributingFactors,
+  personalizedRecommendations: recommendations
+};
 }
 
 /**
- * Helper to extract features from input
- */
+* Helper to extract features from input
+*/
 function extractFeatures(input: PredictionInput): Record<string, number> {
-  const features: Record<string, number> = {};
-  
-  // Numeric features
-  features.age = input.age;
-  features.workExperience = input.yearsInAgriculture;
-  features.workHoursPerDay = input.workHoursPerDay;
-  features.workDaysPerWeek = 5; // Assume 5 days by default
-  
-  // Derived features
-  features.weeklyWorkHours = features.workHoursPerDay * features.workDaysPerWeek;
-  features.workIntensity = features.weeklyWorkHours > 48 ? 3 : 
-                          (features.weeklyWorkHours > 40 ? 2 : 1);
-  
-  // Age-related features
-  features.ageGroup = features.age < 30 ? 1 : 
-                     (features.age < 45 ? 2 : 
-                     (features.age < 60 ? 3 : 4));
-  
-  // Protection score
-  let protectionScore = 0;
-  let maxPossibleScore = 21; // Total possible score for all protection equipment
-  
-  if (input.protectionEquipment.includes('mask')) protectionScore += 5;
-  if (input.protectionEquipment.includes('gloves')) protectionScore += 5;
-  if (input.protectionEquipment.includes('clothing')) protectionScore += 5;
-  if (input.protectionEquipment.includes('boots')) protectionScore += 4;
-  if (input.protectionEquipment.includes('hat')) protectionScore += 2;
-  
-  // Protection metrics
-  features.protectionScore = protectionScore;
-  features.protectionPercent = (protectionScore / maxPossibleScore) * 100;
-  
-  // Chemical exposure
-  features.pesticide = input.exposures.includes('pesticides') ? 1 : 0;
-  features.herbicide = input.exposures.includes('herbicides') ? 1 : 0;
-  features.fertilizer = input.exposures.includes('fertilizers') ? 1 : 0;
-  features.chemicalExposureCount = input.exposures.length;
-  
-  // Health history
-  features.hasTroubleRespiratoire = input.medicalHistory.includes('respiratory') ? 1 : 0;
-  features.hasTroubleCutane = input.medicalHistory.includes('skin') ? 1 : 0;
-  features.hasTroubleNeurologique = input.medicalHistory.includes('neurological') ? 1 : 0;
-  
-  return features;
+const features: Record<string, number> = {};
+
+// Numeric features
+features.age = input.age;
+features.workExperience = input.yearsInAgriculture;
+features.workHoursPerDay = input.workHoursPerDay;
+features.workDaysPerWeek = 5; // Assume 5 days by default
+
+// Derived features
+features.weeklyWorkHours = features.workHoursPerDay * features.workDaysPerWeek;
+features.workIntensity = features.weeklyWorkHours > 48 ? 3 : 
+                        (features.weeklyWorkHours > 40 ? 2 : 1);
+
+// Age-related features
+features.ageGroup = features.age < 30 ? 1 : 
+                   (features.age < 45 ? 2 : 
+                   (features.age < 60 ? 3 : 4));
+
+// Protection score
+let protectionScore = 0;
+let maxPossibleScore = 21; // Total possible score for all protection equipment
+
+if (input.protectionEquipment.includes('mask')) protectionScore += 5;
+if (input.protectionEquipment.includes('gloves')) protectionScore += 5;
+if (input.protectionEquipment.includes('clothing')) protectionScore += 5;
+if (input.protectionEquipment.includes('boots')) protectionScore += 4;
+if (input.protectionEquipment.includes('hat')) protectionScore += 2;
+
+// Protection metrics
+features.protectionScore = protectionScore;
+features.protectionPercent = (protectionScore / maxPossibleScore) * 100;
+
+// Chemical exposure
+features.pesticide = input.exposures.includes('pesticides') ? 1 : 0;
+features.herbicide = input.exposures.includes('herbicides') ? 1 : 0;
+features.fertilizer = input.exposures.includes('fertilizers') ? 1 : 0;
+features.chemicalExposureCount = input.exposures.length;
+
+// Health history
+features.hasTroubleRespiratoire = input.medicalHistory.includes('respiratory') ? 1 : 0;
+features.hasTroubleCutane = input.medicalHistory.includes('skin') ? 1 : 0;
+features.hasTroubleNeurologique = input.medicalHistory.includes('neurological') ? 1 : 0;
+
+return features;
 }
 
 /**
- * Apply feature scaling to match training data
- */
+* Apply feature scaling to match training data
+*/
 function scaleFeatures(features: Record<string, number>, scaling: Record<string, {min: number, max: number, mean: number}>): Record<string, number> {
-  const scaledFeatures = {...features};
-  
-  // Apply scaling to numeric features that were scaled during training
-  Object.keys(scaling).forEach(feature => {
-    if (feature in scaledFeatures) {
-      const stats = scaling[feature];
-      if (stats.max !== stats.min) { // Avoid division by zero
-        scaledFeatures[feature] = (scaledFeatures[feature] - stats.min) / (stats.max - stats.min);
-      } else {
-        scaledFeatures[feature] = 0;
-      }
+const scaledFeatures = {...features};
+
+// Apply scaling to numeric features that were scaled during training
+Object.keys(scaling).forEach(feature => {
+  if (feature in scaledFeatures) {
+    const stats = scaling[feature];
+    if (stats.max !== stats.min) { // Avoid division by zero
+      scaledFeatures[feature] = (scaledFeatures[feature] - stats.min) / (stats.max - stats.min);
+    } else {
+      scaledFeatures[feature] = 0;
     }
-  });
-  
-  return scaledFeatures;
-}
+  }
+});
+
+return scaledFeatures;
 }
