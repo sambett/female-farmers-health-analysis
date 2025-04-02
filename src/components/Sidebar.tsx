@@ -2,10 +2,10 @@ import React from 'react';
 
 interface SidebarProps {
   activeTab: string;
-  setActiveTab: (tab: string) => void;
+  onTabChange: (tab: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
   const navItems = [
     { id: 'overview', label: 'Overview', icon: '📊' },
     { id: 'health-outcomes', label: 'Health Outcomes', icon: '🏥' },
@@ -26,11 +26,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => onTabChange(item.id)}
               className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-150 ${
                 activeTab === item.id
-                  ? 'bg-teal text-white'
-                  : 'text-slate hover:bg-gray-100'
+                  ? 'bg-teal-600 text-white'
+                  : 'text-slate-700 hover:bg-gray-100'
               }`}
             >
               <span className="mr-3 text-lg">{item.icon}</span>
@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
         <div className="p-4 border-t">
           <div className="text-sm text-gray-600">
             <p>Agricultural Workers Study</p>
-            <p className="mt-1">Updated: March 2025</p>
+            <p className="mt-1">Updated: April 2025</p>
           </div>
         </div>
       </div>

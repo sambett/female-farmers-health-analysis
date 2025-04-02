@@ -1,186 +1,311 @@
-import { useState } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+// RiskPredictionTool.tsx
+import React, { useState, useEffect } from 'react';
+import { FormControl, InputLabel, MenuItem, Select, TextField, Button, Slider, Typography } from '@mui/material';
 
-interface RiskScores {
-  respiratoryRisk: number;
-  neurologicalRisk: number;
-  skinRisk: number;
-  cognitiveRisk: number;
-  overallRisk: number;
+// Import text-derived risk factors types
+interface TextRiskFactor {
+  healthIssue: string;
+  exposure: string;
+  occurrenceCount: number;
+  riskScore: number;
 }
 
-const RiskPredictionTool: React.FC = () => {
-  const [age, setAge] = useState<number>(40);
-  const [workHours, setWorkHours] = useState<number>(8);
-  const [experience, setExperience] = useState<number>(10);
-  const [pesticidesExposure, setPesticidesExposure] = useState<string>('moderate');
-  const [protectionUsage, setProtectionUsage] = useState<string>('sometimes');
-  const [socioEconomic, setSocioEconomic] = useState<string>('medium');
-  const [employmentType, setEmploymentType] = useState<string>('seasonal');
-  const [showResults, setShowResults] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+interface RiskPredictionToolProps {
+  data: any[]; // Your dataset
+  textRiskFactors: TextRiskFactor[]; // Risk factors from text analysis
+}
 
-  const calculateRiskScores = (): RiskScores => {
-    let respiratoryRisk = 20, neurologicalRisk = 15, skinRisk = 18, cognitiveRisk = 12;
-    if (age > 50) { respiratoryRisk += 15; neurologicalRisk += 10; cognitiveRisk += 8; }
-    if (workHours >= 10) { respiratoryRisk += 12; neurologicalRisk += 10; skinRisk += 8; cognitiveRisk += 10; }
-    if (pesticidesExposure === 'high') { respiratoryRisk += 25; neurologicalRisk += 20; skinRisk += 18; cognitiveRisk += 15; }
-    if (protectionUsage === 'always') { respiratoryRisk -= 20; neurologicalRisk -= 15; skinRisk -= 16; cognitiveRisk -= 10; }
-    if (socioEconomic === 'low') { respiratoryRisk += 10; neurologicalRisk += 8; skinRisk += 7; cognitiveRisk += 6; }
-    if (employmentType === 'seasonal') { respiratoryRisk += 8; neurologicalRisk += 5; skinRisk += 7; cognitiveRisk += 4; }
-    const expFactor = Math.min(10, experience / 2);
-    respiratoryRisk -= expFactor; neurologicalRisk -= expFactor; skinRisk -= expFactor; cognitiveRisk -= expFactor;
-
-    return {
-      respiratoryRisk: Math.max(0, Math.min(100, respiratoryRisk)),
-      neurologicalRisk: Math.max(0, Math.min(100, neurologicalRisk)),
-      skinRisk: Math.max(0, Math.min(100, skinRisk)),
-      cognitiveRisk: Math.max(0, Math.min(100, cognitiveRisk)),
-      overallRisk: Math.max(0, Math.min(100, (respiratoryRisk + neurologicalRisk + skinRisk + cognitiveRisk) / 4)),
-    };
-  };
-
-  const handlePredict = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      setShowResults(true);
-      setLoading(false);
-    }, 1000);
-  };
-
-  const riskScores = calculateRiskScores();
-  const pieData = [
-    { name: 'Safe', value: 100 - riskScores.overallRisk },
-    { name: 'Risk', value: riskScores.overallRisk },
+const RiskPredictionTool: React.FC<RiskPredictionToolProps> = ({ data, textRiskFactors }) => {
+  // Form state
+  const [age, setAge] = useState<number>(35);
+  const [workExperience, setWorkExperience] = useState<number>(5);
+  const [workHoursPerDay, setWorkHoursPerDay] = useState<number>(8);
+  const [protectiveEquipment, setProtectiveEquipment] = useState<string[]>([]);
+  const [chemicalExposure, setChemicalExposure] = useState<string[]>([]);
+  const [tasks, setTasks] = useState<string[]>([]);
+  
+  // Result state
+  const [riskScore, setRiskScore] = useState<number | null>(null);
+  const [riskFactors, setRiskFactors] = useState<string[]>([]);
+  
+  // Derived data for dropdowns
+  const [availableChemicals, setAvailableChemicals] = useState<string[]>([]);
+  const [availableTasks, setAvailableTasks] = useState<string[]>([]);
+  
+  // Process dataset to extract options
+  useEffect(() => {
+    if (data && data.length > 0) {
+      // Extract unique chemicals
+      const chemicals = new Set<string>();
+      data.forEach(record => {
+        const chemicalText = record['Produits chimiques utilisés'] || '';
+        if (chemicalText) {
+          const terms = chemicalText.toLowerCase().split(/[,;]/);
+          terms.forEach(term => {
+            const trimmed = term.trim();
+            if (trimmed) chemicals.add(trimmed);
+          });
+        }
+      });
+      
+      // Extract unique tasks
+      const taskSet = new Set<string>();
+      data.forEach(record => {
+        const taskText = record['Tâches effectuées'] || '';
+        if (taskText) {
+          const terms = taskText.toLowerCase().split(/[,;]/);
+          terms.forEach(term => {
+            const trimmed = term.trim();
+            if (trimmed) taskSet.add(trimmed);
+          });
+        }
+      });
+      
+      setAvailableChemicals(Array.from(chemicals));
+      setAvailableTasks(Array.from(taskSet));
+    }
+  }, [data]);
+  
+  // Get available protective equipment options
+  const protectiveEquipmentOptions = [
+    { value: 'masque', label: 'Masque' },
+    { value: 'gants', label: 'Gants' },
+    { value: 'bottes', label: 'Bottes' },
+    { value: 'casquette', label: 'Casquette/Mdhalla' },
+    { value: 'manteau', label: 'Manteau imperméable' }
   ];
-  const barData = [
-    { name: 'Respiratory', risk: riskScores.respiratoryRisk },
-    { name: 'Neurological', risk: riskScores.neurologicalRisk },
-    { name: 'Skin', risk: riskScores.skinRisk },
-    { name: 'Cognitive', risk: riskScores.cognitiveRisk },
-  ];
-  const COLORS = ['#2B6A6E', '#FF6F61'];
-
+  
+  // Calculate risk based on form inputs and text analysis
+  const calculateRisk = () => {
+    // Base risk score starts at 20 (minimum risk)
+    let score = 20;
+    const factors: string[] = [];
+    
+    // Age factor (> 50 years increases risk)
+    if (age > 50) {
+      score += 10;
+      factors.push("Âge supérieur à 50 ans");
+    }
+    
+    // Work experience factor (less experience = higher risk)
+    if (workExperience < 3) {
+      score += 10;
+      factors.push("Moins de 3 ans d'expérience");
+    }
+    
+    // Long working hours factor
+    if (workHoursPerDay > 8) {
+      score += 15;
+      factors.push("Plus de 8 heures de travail par jour");
+    }
+    
+    // Protective equipment factor (subtract from risk)
+    const protectionPercentage = (protectiveEquipment.length / protectiveEquipmentOptions.length) * 100;
+    if (protectionPercentage < 40) {
+      score += 20;
+      factors.push("Utilisation insuffisante d'équipement de protection");
+    } else if (protectionPercentage >= 80) {
+      score -= 15;
+      factors.push("Bonne utilisation d'équipement de protection");
+    }
+    
+    // Chemical exposure factor
+    if (chemicalExposure.length > 0) {
+      score += 5 * chemicalExposure.length;
+      factors.push(`Exposition à ${chemicalExposure.length} produits chimiques`);
+      
+      // Check against text-derived risk factors
+      chemicalExposure.forEach(chemical => {
+        const matchingRiskFactors = textRiskFactors.filter(rf => 
+          rf.exposure.includes(chemical) || chemical.includes(rf.exposure));
+        
+        if (matchingRiskFactors.length > 0) {
+          // Add the highest risk score
+          const highestRiskFactor = matchingRiskFactors.sort((a, b) => b.riskScore - a.riskScore)[0];
+          score += highestRiskFactor.riskScore / 5; // Scale it down a bit
+          factors.push(`Association connue entre ${chemical} et ${highestRiskFactor.healthIssue}`);
+        }
+      });
+    }
+    
+    // Task-related risk
+    if (tasks.length > 0) {
+      // Check if any high-risk tasks are selected
+      const highRiskTasks = ['pesticide', 'epandage', 'traitement'];
+      const hasHighRiskTask = tasks.some(task => 
+        highRiskTasks.some(highRisk => task.includes(highRisk))
+      );
+      
+      if (hasHighRiskTask) {
+        score += 15;
+        factors.push("Tâches à haut risque sélectionnées");
+      }
+    }
+    
+    // Cap the score at 100
+    score = Math.min(Math.max(score, 0), 100);
+    
+    setRiskScore(score);
+    setRiskFactors(factors);
+  };
+  
+  // Risk level label based on score
+  const getRiskLevel = (score: number): string => {
+    if (score < 30) return "Faible";
+    if (score < 50) return "Modéré";
+    if (score < 70) return "Élevé";
+    return "Très élevé";
+  };
+  
+  // Risk color based on score
+  const getRiskColor = (score: number): string => {
+    if (score < 30) return "#4caf50"; // Green
+    if (score < 50) return "#ff9800"; // Orange
+    if (score < 70) return "#f44336"; // Red
+    return "#9c27b0"; // Purple for very high
+  };
+  
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md animate-fade-in">
-      <h2 className="text-2xl font-bold text-slate mb-6">AI Risk Prediction</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-1 bg-gray-50 p-4 rounded-lg border-l-4 border-teal">
-          <form onSubmit={handlePredict} className="space-y-4">
-            {[
-              { label: `Age: ${age} yrs`, min: 20, max: 70, value: age, set: setAge },
-              { label: `Hours: ${workHours}`, min: 4, max: 14, value: workHours, set: setWorkHours },
-              { label: `Exp: ${experience} yrs`, min: 0, max: 40, value: experience, set: setExperience },
-            ].map((input, idx) => (
-              <div key={idx}>
-                <label className="block text-sm font-medium text-slate mb-1">{input.label}</label>
-                <input
-                  type="range"
-                  min={input.min}
-                  max={input.max}
-                  value={input.value}
-                  onChange={(e) => input.set(parseInt(e.target.value, 10))}
-                  className="w-full h-2 bg-lightSlate rounded-lg appearance-none cursor-pointer accent-teal transition-all hover:scale-105"
-                />
-              </div>
-            ))}
-            {[
-              { label: 'Pesticides', value: pesticidesExposure, set: setPesticidesExposure, options: ['high', 'moderate', 'low', 'none'] },
-              { label: 'Protection', value: protectionUsage, set: setProtectionUsage, options: ['always', 'often', 'sometimes', 'never'] },
-              { label: 'Socioeconomic', value: socioEconomic, set: setSocioEconomic, options: ['high', 'medium', 'low'] },
-              { label: 'Employment', value: employmentType, set: setEmploymentType, options: ['permanent', 'seasonal'] },
-            ].map((select, idx) => (
-              <div key={idx}>
-                <label className="block text-sm font-medium text-slate mb-1">{select.label}</label>
-                <select
-                  value={select.value}
-                  onChange={(e) => select.set(e.target.value)}
-                  className="w-full rounded-md border-lightSlate text-sm text-slate focus:ring-teal focus:border-teal transition-all hover:scale-105"
-                >
-                  {select.options.map(opt => (
-                    <option key={opt} value={opt}>{opt.charAt(0).toUpperCase() + opt.slice(1)}</option>
-                  ))}
-                </select>
-              </div>
-            ))}
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full py-2 rounded text-white ${loading ? 'bg-teal/70' : 'bg-teal hover:bg-teal/90'} transition-all hover:scale-105 flex items-center justify-center`}
+    <div className="bg-white p-4 rounded-lg shadow-md">
+      <h2 className="text-xl font-bold mb-4">Outil de Prédiction des Risques</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Typography gutterBottom>Âge</Typography>
+          <Slider
+            value={age}
+            onChange={(_, newValue) => setAge(newValue as number)}
+            valueLabelDisplay="auto"
+            min={18}
+            max={70}
+          />
+          
+          <Typography gutterBottom>Années d'expérience en agriculture</Typography>
+          <Slider
+            value={workExperience}
+            onChange={(_, newValue) => setWorkExperience(newValue as number)}
+            valueLabelDisplay="auto"
+            min={0}
+            max={40}
+          />
+          
+          <Typography gutterBottom>Heures de travail par jour</Typography>
+          <Slider
+            value={workHoursPerDay}
+            onChange={(_, newValue) => setWorkHoursPerDay(newValue as number)}
+            valueLabelDisplay="auto"
+            min={1}
+            max={12}
+          />
+          
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Équipement de protection utilisé</InputLabel>
+            <Select
+              multiple
+              value={protectiveEquipment}
+              onChange={(e) => setProtectiveEquipment(e.target.value as string[])}
+              renderValue={(selected) => (selected as string[])
+                .map(value => protectiveEquipmentOptions.find(opt => opt.value === value)?.label)
+                .join(', ')}
             >
-              {loading ? (
-                <>
-                  <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" className="opacity-25" />
-                    <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" className="opacity-75" />
-                  </svg>
-                  Predicting...
-                </>
-              ) : 'Predict Risks'}
-            </button>
-          </form>
+              {protectiveEquipmentOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </div>
-        <div className="md:col-span-2">
-          {showResults ? (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="h-64 bg-white p-4 rounded-lg shadow gradient-border">
-                  <h3 className="text-sm font-semibold text-slate mb-2">Overall Risk</h3>
-                  <ResponsiveContainer>
-                    <PieChart>
-                      <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} dataKey="value">
-                        {pieData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index]} />)}
-                      </Pie>
-                      <Tooltip contentStyle={{ backgroundColor: '#2D3748', color: 'white', borderRadius: '0.5rem' }} />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="h-64 bg-white p-4 rounded-lg shadow gradient-border">
-                  <h3 className="text-sm font-semibold text-slate mb-2">Risk Breakdown</h3>
-                  <ResponsiveContainer>
-                    <BarChart data={barData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip contentStyle={{ backgroundColor: '#2D3748', color: 'white', borderRadius: '0.5rem' }} />
-                      <Bar dataKey="risk" fill="#FF6F61" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-              <div className="bg-gray-50 p-4 rounded-lg border-l-4 border-teal">
-                <h3 className="font-bold mb-2">Key Risk Factors</h3>
-                <ul className="space-y-2">
-                  {pesticidesExposure === 'high' && (
-                    <li className="flex items-start">
-                      <span className="flex-shrink-0 h-5 w-5 rounded-full bg-red-500 flex items-center justify-center mr-2">
-                        <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 3a1 1 0 01.707.293l7 7a1 1 0 01-1.414 1.414L10 5.414 3.707 11.707a1 1 0 01-1.414-1.414l7-7A1 1 0 0110 3z" clipRule="evenodd" />
-                        </svg>
-                      </span>
-                      <span>High pesticide exposure increases respiratory issues by 25%</span>
-                    </li>
-                  )}
-                  {workHours >= 10 && (
-                    <li className="flex items-start">
-                      <span className="flex-shrink-0 h-5 w-5 rounded-full bg-red-500 flex items-center justify-center mr-2">
-                        <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 3a1 1 0 01.707.293l7 7a1 1 0 01-1.414 1.414L10 5.414 3.707 11.707a1 1 0 01-1.414-1.414l7-7A1 1 0 0110 3z" clipRule="evenodd" />
-                        </svg>
-                      </span>
-                      <span>Long work hours (10+ hours/day) contribute to overall fatigue and increased risk</span>
-                    </li>
-                  )}
-                </ul>
-              </div>
-            </div>
-          ) : (
-            <div className="h-full flex items-center justify-center text-lightSlate">Enter data to predict risks</div>
-          )}
+        
+        <div>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Produits Chimiques Utilisés</InputLabel>
+            <Select
+              multiple
+              value={chemicalExposure}
+              onChange={(e) => setChemicalExposure(e.target.value as string[])}
+              renderValue={(selected) => (selected as string[]).join(', ')}
+            >
+              {availableChemicals.map((chemical) => (
+                <MenuItem key={chemical} value={chemical}>
+                  {chemical}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Tâches Effectuées</InputLabel>
+            <Select
+              multiple
+              value={tasks}
+              onChange={(e) => setTasks(e.target.value as string[])}
+              renderValue={(selected) => (selected as string[]).join(', ')}
+            >
+              {availableTasks.map((task) => (
+                <MenuItem key={task} value={task}>
+                  {task}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={calculateRisk}
+            className="mt-4 w-full"
+          >
+            Calculer le Risque
+          </Button>
         </div>
       </div>
+      
+      {/* Results Section */}
+      {riskScore !== null && (
+        <div className="mt-6 p-4 border rounded-lg">
+          <h3 className="text-lg font-bold mb-2">Résultats de l'Évaluation des Risques</h3>
+          
+          <div className="flex items-center mb-4">
+            <div 
+              className="w-24 h-24 rounded-full flex items-center justify-center text-white text-xl font-bold mr-4"
+              style={{ backgroundColor: getRiskColor(riskScore) }}
+            >
+              {Math.round(riskScore)}%
+            </div>
+            
+            <div>
+              <p className="text-lg font-semibold">
+                Niveau de risque: <span style={{ color: getRiskColor(riskScore) }}>{getRiskLevel(riskScore)}</span>
+              </p>
+              <p className="text-sm text-gray-600">
+                Basé sur les facteurs de risque identifiés et l'analyse de texte des données historiques
+              </p>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="font-bold mb-2">Facteurs de risque identifiés:</h4>
+            <ul className="list-disc pl-5">
+              {riskFactors.map((factor, index) => (
+                <li key={index}>{factor}</li>
+              ))}
+            </ul>
+          </div>
+          
+          {riskScore > 50 && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded">
+              <h4 className="font-bold text-red-700">Recommandations:</h4>
+              <ul className="list-disc pl-5 text-red-700">
+                <li>Augmenter l'utilisation des équipements de protection</li>
+                <li>Réduire l'exposition aux produits chimiques identifiés</li>
+                <li>Envisager une formation supplémentaire sur les pratiques sécuritaires</li>
+                <li>Consulter un professionnel de la santé pour un suivi régulier</li>
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

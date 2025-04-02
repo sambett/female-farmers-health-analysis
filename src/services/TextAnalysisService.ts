@@ -16,11 +16,19 @@ interface StructuredTextData {
   healthChemicalRelations: {health: string, chemical: string, count: number}[];
 }
 
+// Interface for risk factors
+interface StructuredRiskFactor {
+  healthIssue: string;
+  exposure: string;
+  occurrenceCount: number;
+  riskScore: number;
+}
+
 // Main class for text analysis
 export class TextAnalysisService {
   
   // Process all text fields from a dataset
-processTextData(data: Record<string, any>[]): StructuredTextData {
+  processTextData(data: Record<string, any>[]): StructuredTextData {
     // Initialize our result structure
     const result: StructuredTextData = {
       healthIssueTerms: [],
@@ -54,7 +62,7 @@ processTextData(data: Record<string, any>[]): StructuredTextData {
   }
   
   // Process health issue text fields
-private processHealthIssues(record: Record<string, any>, result: StructuredTextData): void {
+  private processHealthIssues(record: Record<string, any>, result: StructuredTextData): void {
     // Combine all health-related text fields
     const healthText = [
       record['Troubles cardio-respiratoires'] || '',
@@ -79,7 +87,7 @@ private processHealthIssues(record: Record<string, any>, result: StructuredTextD
   }
   
   // Process chemical exposure text
-private processChemicalExposure(record: Record<string, any>, result: StructuredTextData): void {
+  private processChemicalExposure(record: Record<string, any>, result: StructuredTextData): void {
     // Get chemical text
     const chemicalText = [
       record['Produits chimiques utilisés'] || '',
@@ -102,7 +110,7 @@ private processChemicalExposure(record: Record<string, any>, result: StructuredT
   }
   
   // Process tasks text
-private processTasks(record: Record<string, any>, result: StructuredTextData): void {
+  private processTasks(record: Record<string, any>, result: StructuredTextData): void {
     // Get tasks text
     const tasksText = record['Tâches effectuées'] || '';
     
@@ -121,7 +129,7 @@ private processTasks(record: Record<string, any>, result: StructuredTextData): v
   }
   
   // Find relations between health issues and chemicals
-private findHealthChemicalRelations(record: Record<string, any>, result: StructuredTextData): void {
+  private findHealthChemicalRelations(record: Record<string, any>, result: StructuredTextData): void {
     // Extract health terms
     const healthText = [
       record['Troubles cardio-respiratoires'] || '',
@@ -180,18 +188,7 @@ private findHealthChemicalRelations(record: Record<string, any>, result: Structu
   }
   
   // Get the top risk factors for a predictive model
-interface StructuredRiskFactor {
-    healthIssue: string;
-    exposure: string;
-    occurrenceCount: number;
-    riskScore: number;
-}
-
-export class TextAnalysisService {
-    // Other methods...
-
-    // Get the top risk factors for a predictive model
-    getTopRiskFactors(structuredData: StructuredTextData, limit: number = 10): StructuredRiskFactor[] {
+  getTopRiskFactors(structuredData: StructuredTextData, limit: number = 10): StructuredRiskFactor[] {
     // Combine health-chemical relations with high counts
     return structuredData.healthChemicalRelations
       .filter(relation => relation.count > 1)
