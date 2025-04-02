@@ -7,13 +7,39 @@ import { PieChart, Pie, Cell } from 'recharts';
 // Define colors for the charts
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#8dd1e1'];
 
+// Define interfaces for our data structures
+interface TermData {
+  term: string;
+  count: number;
+}
+
+interface RelationData {
+  health: string;
+  chemical: string;
+  count: number;
+}
+
+interface ChartDataItem {
+  name: string;
+  value: number;
+}
+
+interface StructuredTextData {
+  healthIssueTerms: TermData[];
+  chemicalExposureTerms: TermData[];
+  taskTerms: TermData[];
+  healthChemicalRelations: RelationData[];
+}
+
 interface TextAnalysisProps {
-  data: any[]; // Your dataset
-  onRiskFactorsGenerated: (riskFactors: any[]) => void; // Callback to send risk factors to prediction tool
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any[]; // Your dataset, can be any array of objects
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onRiskFactorsGenerated: (riskFactors: any[]) => void; // Callback with risk factors
 }
 
 const TextAnalysisComponent: React.FC<TextAnalysisProps> = ({ data, onRiskFactorsGenerated }) => {
-  const [analysisResults, setAnalysisResults] = useState<any>(null);
+  const [analysisResults, setAnalysisResults] = useState<StructuredTextData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<string>('health');
 
@@ -41,7 +67,7 @@ const TextAnalysisComponent: React.FC<TextAnalysisProps> = ({ data, onRiskFactor
   }
 
   // Prepare data for visualization
-  const prepareChartData = (termData: {term: string, count: number}[], limit: number = 10) => {
+  const prepareChartData = (termData: TermData[], limit: number = 10): ChartDataItem[] => {
     return termData.slice(0, limit).map(item => ({
       name: item.term,
       value: item.count
@@ -49,13 +75,20 @@ const TextAnalysisComponent: React.FC<TextAnalysisProps> = ({ data, onRiskFactor
   };
 
   // Prepare relation data
-  const prepareRelationData = () => {
+  const prepareRelationData = (): ChartDataItem[] => {
     return analysisResults.healthChemicalRelations
       .slice(0, 10)
       .map(relation => ({
         name: `${relation.health} - ${relation.chemical}`,
         value: relation.count
       }));
+  };
+
+  // Custom label function for pie chart
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const renderCustomizedLabel = (props: any) => {
+    const { name, percent } = props;
+    return `${name} (${(percent * 100).toFixed(0)}%)`;
   };
 
   return (
@@ -101,7 +134,7 @@ const TextAnalysisComponent: React.FC<TextAnalysisProps> = ({ data, onRiskFactor
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                label={renderCustomizedLabel}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
