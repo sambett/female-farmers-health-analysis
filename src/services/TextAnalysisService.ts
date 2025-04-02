@@ -5,8 +5,7 @@ import * as natural from 'natural';
 import stopwords from './stopwords-fr';
 import { StructuredTextData, RiskFactor, HealthRecord } from '../types';
 
-// Import RelationData from types for internal usage
-import type { RelationData } from '../types';
+// All needed types are imported above
 
 // Tokenizer for French text
 const tokenizer = new natural.WordTokenizer();
@@ -316,7 +315,7 @@ export class TextAnalysisService {
     text = text.toLowerCase();
     
     // Split by common separators (commas, semicolons, etc.)
-    const segments = text.split(/[,;\/.\-\s]+/);
+    const segments = text.split(/[,;.\-\s]+/);
     const result = new Set<string>();
     
     // First pass: check for exact matches in dictionary (for multi-word terms)
