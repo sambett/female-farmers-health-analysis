@@ -3,34 +3,77 @@ import TextAnalysisComponent from './TextAnalysisComponent';
 import RiskPredictionTool from './RiskPredictionTool';
 import EnhancedRiskPredictionTool from './EnhancedRiskPredictionTool';
 import { loadData } from '../services/DataService';
+import * as XLSX from 'xlsx'; // Import XLSX directly as well for fallback
+import { HealthRecord, RiskFactor } from '../types';
 
 interface DashboardContentProps {
   activeTab: string;
 }
 
 const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<HealthRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [textRiskFactors, setTextRiskFactors] = useState<any[]>([]);
-  const [selectedRiskFactor, setSelectedRiskFactor] = useState<any | null>(null);
+  const [textRiskFactors, setTextRiskFactors] = useState<RiskFactor[]>([]);
+  const [selectedRiskFactor, setSelectedRiskFactor] = useState<RiskFactor | null>(null);
   const [useEnhancedTool, setUseEnhancedTool] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Use window.fs to load the fixed_female_farmers_data.xlsx file
-        const fileBuffer = await window.fs.readFile('fixed_female_farmers_data.xlsx');
-        const arrayBuffer = fileBuffer.buffer;
+        // Try to load the file using window.fs if available, otherwise fallback to fetch API
+        let arrayBuffer;
+        
+        if (typeof window !== 'undefined' && 'fs' in window && window.fs) {
+          try {
+            // Use window.fs to load the fixed_female_farmers_data.xlsx file
+            const fileBuffer = await window.fs.readFile('fixed_female_farmers_data.xlsx');
+            if (fileBuffer instanceof Uint8Array) {
+              arrayBuffer = fileBuffer.buffer;
+            } else {
+              throw new Error('Expected Uint8Array from window.fs.readFile');
+            }
+          } catch (fsError) {
+            console.warn('Error reading with window.fs:', fsError);
+            // Fallback to fetch API
+            const response = await fetch('fixed_female_farmers_data.xlsx');
+            arrayBuffer = await response.arrayBuffer();
+          }
+        } else {
+          // window.fs not available, use fetch API
+          const response = await fetch('fixed_female_farmers_data.xlsx');
+          arrayBuffer = await response.arrayBuffer();
+        }
         
         // Process the data using XLSX directly
-        const XLSX = await import('xlsx');
-        const workbook = XLSX.read(new Uint8Array(arrayBuffer), {
-          type: 'array',
-          cellDates: true,
-          cellNF: true,
-          cellStyles: true
-        });
+        let workbook;
+        try {
+          // Try dynamic import first
+          const XLSXModule = await import('xlsx');
+          workbook = XLSXModule.read(new Uint8Array(arrayBuffer), {
+            type: 'array',
+            cellDates: true,
+            cellNF: true,
+            cellStyles: true
+          });
+        } catch (importError) {
+          console.warn('Dynamic import failed, using static import:', importError);
+          // Fallback to static import
+          workbook = XLSX.read(new Uint8Array(arrayBuffer), {
+            type: 'array',
+            cellDates: true,
+            cellNF: true,
+            cellStyles: true
+          });
+        }
+        
+        // Validate workbook data
+        if (!workbook || !workbook.SheetNames || workbook.SheetNames.length === 0) {
+          console.warn('Invalid workbook data, using sample data');
+          const sampleData = await loadData('sample');
+          setData(sampleData);
+          return;
+        }
         
         // Get first sheet
         const sheetName = workbook.SheetNames[0];
@@ -43,7 +86,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
         });
         
         // Process the data to ensure all needed fields are properly formatted
-        const processedData = jsonData.map((record: any) => {
+        const processedData = jsonData.map((record: Record<string, unknown>): HealthRecord => {
           // Create a copy of the record to avoid modifying the original
           const processedRecord = { ...record };
           
@@ -142,7 +185,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
   }, []);
 
   // Callback for receiving risk factors from text analysis
-  const handleRiskFactorsGenerated = (factors: any[]) => {
+  const handleRiskFactorsGenerated = (factors: RiskFactor[]) => {
     setTextRiskFactors(factors);
     // If we have at least one risk factor, select the first one for highlighting
     if (factors.length > 0) {
@@ -151,7 +194,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
   };
   
   // Handle clicking on a risk factor in the text analysis component
-  const handleRiskFactorSelect = (factor: any) => {
+  const handleRiskFactorSelect = (factor: RiskFactor) => {
     setSelectedRiskFactor(factor);
   };
 

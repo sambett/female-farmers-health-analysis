@@ -1,19 +1,12 @@
 // EnhancedRiskPredictionTool.tsx - Advanced version with NLP integration
 import React, { useState, useEffect } from 'react';
-import { FormControl, InputLabel, MenuItem, Select, TextField, Button, Slider, Typography } from '@mui/material';
-
-// Import text-derived risk factors types
-interface TextRiskFactor {
-  healthIssue: string;
-  exposure: string;
-  occurrenceCount: number;
-  riskScore: number;
-}
+import { FormControl, InputLabel, MenuItem, Select, Button, Slider, Typography } from '@mui/material';
+import { HealthRecord, RiskFactor, SpecificRisks } from '../types';
 
 interface EnhancedRiskPredictionToolProps {
-  data: any[]; // Your dataset
-  textRiskFactors: TextRiskFactor[]; // Risk factors from text analysis
-  highlightedRiskFactor?: TextRiskFactor | null; // Optionally highlight a specific risk factor
+  data: HealthRecord[]; // Your dataset
+  textRiskFactors: RiskFactor[]; // Risk factors from text analysis
+  highlightedRiskFactor?: RiskFactor | null; // Optionally highlight a specific risk factor
 }
 
 const EnhancedRiskPredictionTool: React.FC<EnhancedRiskPredictionToolProps> = ({ 
@@ -36,14 +29,14 @@ const EnhancedRiskPredictionTool: React.FC<EnhancedRiskPredictionToolProps> = ({
   // Enhanced result state
   const [riskScore, setRiskScore] = useState<number | null>(null);
   const [riskFactors, setRiskFactors] = useState<string[]>([]);
-  const [specificRisks, setSpecificRisks] = useState<{
-    respiratory: number;
-    skin: number;
-    neurological: number;
-    overall: number;
-  }>({ respiratory: 0, skin: 0, neurological: 0, overall: 0 });
+  const [specificRisks, setSpecificRisks] = useState<SpecificRisks>({
+    respiratory: 0,
+    skin: 0,
+    neurological: 0,
+    overall: 0
+  });
   const [personalizedRecommendations, setPersonalizedRecommendations] = useState<string[]>([]);
-  const [matchedRiskFactors, setMatchedRiskFactors] = useState<TextRiskFactor[]>([]);
+  const [matchedRiskFactors, setMatchedRiskFactors] = useState<RiskFactor[]>([]);
   
   // Derived data for dropdowns
   const [availableChemicals, setAvailableChemicals] = useState<string[]>([]);

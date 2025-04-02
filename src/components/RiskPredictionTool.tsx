@@ -1,18 +1,11 @@
 // RiskPredictionTool.tsx
 import React, { useState, useEffect } from 'react';
-import { FormControl, InputLabel, MenuItem, Select, TextField, Button, Slider, Typography } from '@mui/material';
-
-// Import text-derived risk factors types
-interface TextRiskFactor {
-  healthIssue: string;
-  exposure: string;
-  occurrenceCount: number;
-  riskScore: number;
-}
+import { FormControl, InputLabel, MenuItem, Select, Button, Slider, Typography } from '@mui/material';
+import { HealthRecord, RiskFactor } from '../types';
 
 interface RiskPredictionToolProps {
-  data: any[]; // Your dataset
-  textRiskFactors: TextRiskFactor[]; // Risk factors from text analysis
+  data: HealthRecord[]; // Your dataset
+  textRiskFactors: RiskFactor[]; // Risk factors from text analysis
 }
 
 const RiskPredictionTool: React.FC<RiskPredictionToolProps> = ({ data, textRiskFactors }) => {

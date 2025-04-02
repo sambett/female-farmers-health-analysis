@@ -1,13 +1,47 @@
 // DataService.ts
 import * as XLSX from 'xlsx';
+import { HealthRecord } from '../types';
+
+// Declare window.fs type
+declare global {
+  interface Window {
+    fs?: {
+      readFile(path: string, options?: { encoding?: string }): Promise<Uint8Array | string>;
+    };
+  }
+}
 
 // Function to load data from an Excel file
-export const loadData = async (filePath: string): Promise<any[]> => {
+export const loadData = async (filePath: string): Promise<HealthRecord[]> => {
   try {
-    // In a browser environment, use a direct approach to load the file
-    // This should work with the expected file structure
-    const response = await fetch(filePath);
-    const arrayBuffer = await response.arrayBuffer();
+    // For 'sample' filepath, return sample data immediately
+    if (filePath === 'sample') {
+      return getSampleData();
+    }
+    
+    // Try multiple methods to load the file
+    let arrayBuffer: ArrayBuffer;
+    
+    // First try window.fs if available
+    if (typeof window !== 'undefined' && 'fs' in window && window.fs) {
+      try {
+        const fileBuffer = await window.fs.readFile(filePath);
+        if (fileBuffer instanceof Uint8Array) {
+          arrayBuffer = fileBuffer.buffer;
+        } else {
+          throw new Error('Expected Uint8Array from window.fs.readFile');
+        }
+      } catch (fsError) {
+        console.warn('Error loading with window.fs:', fsError);
+        // Fall back to fetch API
+        const response = await fetch(filePath);
+        arrayBuffer = await response.arrayBuffer();
+      }
+    } else {
+      // window.fs not available, use fetch API
+      const response = await fetch(filePath);
+      arrayBuffer = await response.arrayBuffer();
+    }
     
     // Parse Excel file
     const workbook = XLSX.read(new Uint8Array(arrayBuffer), {
@@ -38,7 +72,7 @@ export const loadData = async (filePath: string): Promise<any[]> => {
 };
 
 // Process the data to handle specific formats and clean values
-const processData = (data: any[]): any[] => {
+const processData = (data: Record<string, unknown>[]): HealthRecord[] => {
   return data.map(record => {
     const processedRecord = { ...record };
     
@@ -76,7 +110,7 @@ const processData = (data: any[]): any[] => {
 };
 
 // Sample data for development/testing purposes
-const getSampleData = (): any[] => {
+const getSampleData = (): HealthRecord[] => {
   return [
     {
       "N°": 1,
@@ -154,7 +188,7 @@ const getSampleData = (): any[] => {
 };
 
 // Function to extract unique values for a given field
-export const getUniqueValues = (data: any[], field: string): string[] => {
+export const getUniqueValues = (data: HealthRecord[], field: string): string[] => {
   const valueSet = new Set<string>();
   
   data.forEach(record => {

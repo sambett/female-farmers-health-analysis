@@ -3,48 +3,23 @@ import React, { useEffect, useState } from 'react';
 import { TextAnalysisService } from '../services/TextAnalysisService';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { PieChart, Pie, Cell } from 'recharts';
+import { ChartDataItem, StructuredTextData, TermData, RelationData, RiskFactor, HealthRecord } from '../types';
 
 // Define colors for the charts
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#8dd1e1'];
 
-// Define interfaces for our data structures
-interface TermData {
-  term: string;
-  count: number;
-}
-
-interface RelationData {
-  health: string;
-  chemical: string;
-  count: number;
-}
-
-interface ChartDataItem {
-  name: string;
-  value: number;
-}
-
-interface StructuredTextData {
-  healthIssueTerms: TermData[];
-  chemicalExposureTerms: TermData[];
-  taskTerms: TermData[];
-  healthChemicalRelations: RelationData[];
-}
-
+// Define interfaces for our component props
 interface TextAnalysisProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any[]; // Your dataset, can be any array of objects
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onRiskFactorsGenerated: (riskFactors: any[]) => void; // Callback with risk factors
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onRiskFactorSelected?: (riskFactor: any) => void; // Optional callback when a risk factor is selected
+  data: HealthRecord[]; // Your dataset of health records
+  onRiskFactorsGenerated: (riskFactors: RiskFactor[]) => void; // Callback with risk factors
+  onRiskFactorSelected?: (riskFactor: RiskFactor) => void; // Optional callback when a risk factor is selected
 }
 
 const TextAnalysisComponent: React.FC<TextAnalysisProps> = ({ data, onRiskFactorsGenerated, onRiskFactorSelected }) => {
   const [analysisResults, setAnalysisResults] = useState<StructuredTextData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<string>('health');
-  const [selectedRiskFactor, setSelectedRiskFactor] = useState<any | null>(null);
+  const [selectedRiskFactor, setSelectedRiskFactor] = useState<RiskFactor | null>(null);
 
   useEffect(() => {
     if (data && data.length > 0) {

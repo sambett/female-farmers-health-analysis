@@ -3,6 +3,16 @@
 
 import * as natural from 'natural';
 import stopwords from './stopwords-fr';
+import { StructuredTextData, RiskFactor, HealthRecord } from '../types';
+
+// Check if window.fs is defined - add this to avoid TypeScript errors
+declare global {
+  interface Window {
+    fs?: {
+      readFile(path: string, options?: { encoding?: string }): Promise<Uint8Array | string>;
+    };
+  }
+}
 
 // Tokenizer for French text
 const tokenizer = new natural.WordTokenizer();
@@ -119,27 +129,13 @@ const taskTermDictionary = {
   'fertil': 'fertilisation',
 };
 
-// Interface for our structured text data
-interface StructuredTextData {
-  healthIssueTerms: {term: string, count: number}[];
-  chemicalExposureTerms: {term: string, count: number}[];
-  taskTerms: {term: string, count: number}[];
-  healthChemicalRelations: {health: string, chemical: string, count: number}[];
-}
 
-// Interface for risk factors
-interface StructuredRiskFactor {
-  healthIssue: string;
-  exposure: string;
-  occurrenceCount: number;
-  riskScore: number;
-}
 
 // Main class for text analysis
 export class TextAnalysisService {
   
   // Process all text fields from a dataset
-  processTextData(data: Record<string, any>[]): StructuredTextData {
+  processTextData(data: HealthRecord[]): StructuredTextData {
     // Initialize our result structure
     const result: StructuredTextData = {
       healthIssueTerms: [],
@@ -173,7 +169,7 @@ export class TextAnalysisService {
   }
   
   // Process health issue text fields
-  private processHealthIssues(record: Record<string, any>, result: StructuredTextData): void {
+  private processHealthIssues(record: HealthRecord, result: StructuredTextData): void {
     // Combine all health-related text fields
     const healthText = [
       record['Troubles cardio-respiratoires'] || '',
@@ -198,7 +194,7 @@ export class TextAnalysisService {
   }
   
   // Process chemical exposure text
-  private processChemicalExposure(record: Record<string, any>, result: StructuredTextData): void {
+  private processChemicalExposure(record: HealthRecord, result: StructuredTextData): void {
     // Get chemical text
     const chemicalText = [
       record['Produits chimiques utilisés'] || '',
@@ -221,7 +217,7 @@ export class TextAnalysisService {
   }
   
   // Process tasks text
-  private processTasks(record: Record<string, any>, result: StructuredTextData): void {
+  private processTasks(record: HealthRecord, result: StructuredTextData): void {
     // Get tasks text
     const tasksText = record['Tâches effectuées'] || '';
     
@@ -240,7 +236,7 @@ export class TextAnalysisService {
   }
   
   // Find relations between health issues and chemicals
-  private findHealthChemicalRelations(record: Record<string, any>, result: StructuredTextData): void {
+  private findHealthChemicalRelations(record: HealthRecord, result: StructuredTextData): void {
     // Extract health terms using health dictionary
     const healthText = [
       record['Troubles cardio-respiratoires'] || '',
@@ -367,7 +363,7 @@ export class TextAnalysisService {
   }
   
   // Get the top risk factors for a predictive model
-  getTopRiskFactors(structuredData: StructuredTextData, limit: number = 10): StructuredRiskFactor[] {
+  getTopRiskFactors(structuredData: StructuredTextData, limit: number = 10): RiskFactor[] {
     // Calculate the maximum relationship count for normalization
     const maxCount = Math.max(
       structuredData.healthChemicalRelations.reduce((max, r) => 
