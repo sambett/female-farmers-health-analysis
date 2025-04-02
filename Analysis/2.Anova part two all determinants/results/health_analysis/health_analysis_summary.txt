@@ -1,0 +1,25 @@
+# Health Analysis Summary Report
+
+Date: 2025-04-01
+Dataset: Female Farmers Health Study
+Sample Size: 80
+
+## Key Findings
+
+No significant health relationships were identified. This might be due to the small sample size or data quality issues.
+
+## Analysis Methods
+
+The following health analyses were performed:
+- Relationships between BMI and health outcomes
+- Blood pressure analysis and its determinants
+- Impact of traditional practices (Tabouna smoke, Neffa) on health
+- Work patterns and health relationships
+- Transportation method and health outcomes
+- Agricultural experience and health metrics
+
+## Data Limitations
+
+- Small sample size limiting statistical power
+- Missing values in some key variables
+- Self-reported health complaints may be subject to recall bias

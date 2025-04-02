@@ -1,0 +1,5 @@
+Principal Component,Name,Explained Variance (%),Interpretation
+PC1,+Age / +Ancienneté agricole / +TAS,23.609220482695424,"PC1 (23.6% of variance): This component represents the contrast between higher values of Age, Ancienneté agricole, TAS. This appears to represent age/experience factors."
+PC2,-Nb enfants / -Nb pers à charge / -Taille,16.1021740700571,"PC2 (16.1% of variance): This component represents the contrast between lower values of Nb enfants, Nb pers à charge, Taille. This appears to represent family/physical characteristics."
+PC3,-TAD / -Poids / +GAD,13.530130990136765,"PC3 (13.5% of variance): This component represents the contrast between GAD (positive) and TAD, Poids (negative). This appears to represent a blood pressure/weight contrast."
+PC4,-J travail / Sem / +TAS / -H travail / jour,9.856421222733532,"PC4 (9.9% of variance): This component represents the contrast between TAS (positive) and J travail / Sem, H travail / jour (negative). This appears to represent work intensity factors."
