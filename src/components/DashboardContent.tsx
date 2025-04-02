@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TextAnalysisComponent from './TextAnalysisComponent';
 import RiskPredictionTool from './RiskPredictionTool';
+import EnhancedRiskPredictionTool from './EnhancedRiskPredictionTool';
 import { loadData } from '../services/DataService';
 
 interface DashboardContentProps {
@@ -11,16 +12,127 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [textRiskFactors, setTextRiskFactors] = useState<any[]>([]);
+  const [selectedRiskFactor, setSelectedRiskFactor] = useState<any | null>(null);
+  const [useEnhancedTool, setUseEnhancedTool] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Load your data from a file or API
-        const rawData = await loadData('fixed_female_farmers_data.xlsx');
-        setData(rawData);
+        // Use window.fs to load the fixed_female_farmers_data.xlsx file
+        const fileBuffer = await window.fs.readFile('fixed_female_farmers_data.xlsx');
+        const arrayBuffer = fileBuffer.buffer;
+        
+        // Process the data using XLSX directly
+        const XLSX = await import('xlsx');
+        const workbook = XLSX.read(new Uint8Array(arrayBuffer), {
+          type: 'array',
+          cellDates: true,
+          cellNF: true,
+          cellStyles: true
+        });
+        
+        // Get first sheet
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        
+        // Convert to JSON
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+          defval: '', // Default value for empty cells
+          raw: false  // Convert values to string
+        });
+        
+        // Process the data to ensure all needed fields are properly formatted
+        const processedData = jsonData.map((record: any) => {
+          // Create a copy of the record to avoid modifying the original
+          const processedRecord = { ...record };
+          
+          // Ensure health issue fields are strings
+          ['Troubles cardio-respiratoires', 'Troubles cognitifs', 
+           'Troubles neurologiques', 'Troubles cutanés/phanères', 
+           'Autres plaintes'].forEach(field => {
+            if (processedRecord[field] === undefined || processedRecord[field] === null) {
+              processedRecord[field] = '';
+            } else {
+              processedRecord[field] = processedRecord[field].toString();
+            }
+          });
+          
+          // Ensure chemical fields are strings
+          ['Produits chimiques utilisés', 'Engrais utilisés', 
+           'Produits biologiques utilisés'].forEach(field => {
+            if (processedRecord[field] === undefined || processedRecord[field] === null) {
+              processedRecord[field] = '';
+            } else {
+              processedRecord[field] = processedRecord[field].toString();
+            }
+          });
+          
+          // Ensure task field is a string
+          if (processedRecord['Tâches effectuées'] === undefined || 
+              processedRecord['Tâches effectuées'] === null) {
+            processedRecord['Tâches effectuées'] = '';
+          } else {
+            processedRecord['Tâches effectuées'] = processedRecord['Tâches effectuées'].toString();
+          }
+          
+          return processedRecord;
+        });
+        
+        setData(processedData);
       } catch (error) {
         console.error('Error loading data:', error);
+        // Fallback to sample data in case of error
+        setData([
+          {
+            "N°": 1,
+            "Age": 45,
+            "Situation maritale": "mariée",
+            "Nb enfants": 3,
+            "Niveau socio-économique": "moyen",
+            "Statut": "permanente",
+            "H travail / jour": 8,
+            "J travail / Sem": 6,
+            "Ancienneté agricole": 15,
+            "Tâches effectuées": "epandage des engrais, cueillette des olives",
+            "Produits chimiques utilisés": "pesticides, engrais chimiques",
+            "Masque pour pesticides": "parfois",
+            "Bottes": "souvent",
+            "Gants": "parfois",
+            "Casquette/Mdhalla": "toujours",
+            "Manteau imperméable": "jamais",
+            "Troubles cardio-respiratoires": "dyspnée, palpitations",
+            "Troubles cognitifs": "",
+            "Troubles neurologiques": "céphalées",
+            "Troubles cutanés/phanères": "irritation cutanée",
+            "TAS": 130,
+            "TAD": 85
+          },
+          {
+            "N°": 2,
+            "Age": 52,
+            "Situation maritale": "mariée",
+            "Nb enfants": 4,
+            "Niveau socio-économique": "bas",
+            "Statut": "saisonnière",
+            "H travail / jour": 10,
+            "J travail / Sem": 5,
+            "Ancienneté agricole": 25,
+            "Tâches effectuées": "cueillette des fruits, désherbage",
+            "Produits chimiques utilisés": "herbicides",
+            "Masque pour pesticides": "jamais",
+            "Bottes": "parfois",
+            "Gants": "jamais",
+            "Casquette/Mdhalla": "toujours",
+            "Manteau imperméable": "jamais",
+            "Troubles cardio-respiratoires": "toux chronique",
+            "Troubles cognitifs": "troubles de la mémoire",
+            "Troubles neurologiques": "vertiges, céphalées",
+            "Troubles cutanés/phanères": "dermatite",
+            "TAS": 145,
+            "TAD": 90
+          }
+        ]);
       } finally {
         setLoading(false);
       }
@@ -32,6 +144,15 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
   // Callback for receiving risk factors from text analysis
   const handleRiskFactorsGenerated = (factors: any[]) => {
     setTextRiskFactors(factors);
+    // If we have at least one risk factor, select the first one for highlighting
+    if (factors.length > 0) {
+      setSelectedRiskFactor(factors[0]);
+    }
+  };
+  
+  // Handle clicking on a risk factor in the text analysis component
+  const handleRiskFactorSelect = (factor: any) => {
+    setSelectedRiskFactor(factor);
   };
 
   if (loading) {
@@ -45,7 +166,8 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
         {activeTab === 'ai-prediction' || activeTab === 'analytics' ? (
           <TextAnalysisComponent 
             data={data} 
-            onRiskFactorsGenerated={handleRiskFactorsGenerated} 
+            onRiskFactorsGenerated={handleRiskFactorsGenerated}
+            onRiskFactorSelected={handleRiskFactorSelect}
           />
         ) : null}
       </div>
@@ -53,10 +175,37 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
       {/* Risk Prediction Tool - Takes 2 columns on large screens */}
       <div className="lg:col-span-2">
         {activeTab === 'ai-prediction' && (
-          <RiskPredictionTool 
-            data={data} 
-            textRiskFactors={textRiskFactors} 
-          />
+          <>
+            <div className="flex justify-end mb-2">
+              <label className="inline-flex items-center cursor-pointer">
+                <span className="mr-2 text-sm font-medium text-gray-700">
+                  {useEnhancedTool ? 'Outil avancé' : 'Outil standard'}
+                </span>
+                <div className="relative">
+                  <input 
+                    type="checkbox" 
+                    checked={useEnhancedTool}
+                    onChange={() => setUseEnhancedTool(!useEnhancedTool)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </div>
+              </label>
+            </div>
+
+            {useEnhancedTool ? (
+              <EnhancedRiskPredictionTool 
+                data={data} 
+                textRiskFactors={textRiskFactors}
+                highlightedRiskFactor={selectedRiskFactor}
+              />
+            ) : (
+              <RiskPredictionTool 
+                data={data} 
+                textRiskFactors={textRiskFactors} 
+              />
+            )}
+          </>
         )}
         
         {activeTab === 'analytics' && (

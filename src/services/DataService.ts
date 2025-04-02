@@ -4,12 +4,9 @@ import * as XLSX from 'xlsx';
 // Function to load data from an Excel file
 export const loadData = async (filePath: string): Promise<any[]> => {
   try {
-    // In a real application, you would make an API call or use a file input
-    // For this implementation, we'll use a mock approach
-    
-    // In a real React app, you would need to configure this properly
-    // This is a placeholder for the actual implementation
-    const response = await fetch(`/data/${filePath}`);
+    // In a browser environment, use a direct approach to load the file
+    // This should work with the expected file structure
+    const response = await fetch(filePath);
     const arrayBuffer = await response.arrayBuffer();
     
     // Parse Excel file

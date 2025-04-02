@@ -36,12 +36,15 @@ interface TextAnalysisProps {
   data: any[]; // Your dataset, can be any array of objects
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onRiskFactorsGenerated: (riskFactors: any[]) => void; // Callback with risk factors
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onRiskFactorSelected?: (riskFactor: any) => void; // Optional callback when a risk factor is selected
 }
 
-const TextAnalysisComponent: React.FC<TextAnalysisProps> = ({ data, onRiskFactorsGenerated }) => {
+const TextAnalysisComponent: React.FC<TextAnalysisProps> = ({ data, onRiskFactorsGenerated, onRiskFactorSelected }) => {
   const [analysisResults, setAnalysisResults] = useState<StructuredTextData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<string>('health');
+  const [selectedRiskFactor, setSelectedRiskFactor] = useState<any | null>(null);
 
   useEffect(() => {
     if (data && data.length > 0) {
@@ -62,6 +65,26 @@ const TextAnalysisComponent: React.FC<TextAnalysisProps> = ({ data, onRiskFactor
     }
   }, [data, onRiskFactorsGenerated]);
 
+  // Handle clicking on a risk factor
+  const handleRiskFactorClick = (relation: RelationData) => {
+    // Find the corresponding risk factor in the risk factors list
+    const textAnalysisService = new TextAnalysisService();
+    const riskFactors = textAnalysisService.getTopRiskFactors(analysisResults!);
+    
+    const clickedFactor = riskFactors.find(rf => 
+      rf.healthIssue === relation.health && rf.exposure === relation.chemical
+    );
+    
+    if (clickedFactor) {
+      setSelectedRiskFactor(clickedFactor);
+      
+      // Call the callback if provided
+      if (onRiskFactorSelected) {
+        onRiskFactorSelected(clickedFactor);
+      }
+    }
+  };
+  
   if (loading || !analysisResults) {
     return <div className="p-4">Chargement de l'analyse de texte...</div>;
   }
@@ -175,7 +198,11 @@ const TextAnalysisComponent: React.FC<TextAnalysisProps> = ({ data, onRiskFactor
           <h3 className="font-bold">Facteurs de Risque Principaux</h3>
           <div className="mt-2 space-y-2">
             {analysisResults.healthChemicalRelations.slice(0, 5).map((relation, index) => (
-              <div key={index} className="flex items-center">
+              <div 
+                key={index} 
+                className={`flex items-center cursor-pointer p-2 rounded-md ${selectedRiskFactor && selectedRiskFactor.healthIssue === relation.health && selectedRiskFactor.exposure === relation.chemical ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
+                onClick={() => handleRiskFactorClick(relation)}
+              >
                 <div 
                   className="w-4 h-4 rounded-full mr-2" 
                   style={{ backgroundColor: COLORS[index % COLORS.length] }}
