@@ -3,6 +3,11 @@ import { loadData } from './services/DataService';
 import { HealthRecord } from './types';
 import { predictRisks, PredictionResult, buildPredictionModel } from './services/PredictionService';
 import EnhancedRiskPredictionTool from './components/EnhancedRiskPredictionTool';
+import Overview from './components/Overview';
+import HealthOutcomes from './components/HealthOutcomes';
+import Exposures from './components/Exposures';
+import Protection from './components/Protection';
+import Analytics from './components/Analytics';
 
 function App() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -39,75 +44,6 @@ function App() {
 
     fetchData();
   }, []);
-
-  // Function to calculate risk score based on selected factors and profile
-  const calculateAIRiskPrediction = () => {
-    // Convert selected risk factors to the format expected by the prediction service
-    const exposures = [];
-    if (selectedRiskFactors.includes('pesticides')) exposures.push('pesticides');
-    if (selectedRiskFactors.includes('herbicides')) exposures.push('herbicides');
-    if (selectedRiskFactors.includes('fertilizers')) exposures.push('fertilizers');
-    
-    // Determine protective equipment
-    const protectionEquipment = [];
-    if (!selectedRiskFactors.includes('noMask')) protectionEquipment.push('mask');
-    if (!selectedRiskFactors.includes('noGloves')) protectionEquipment.push('gloves');
-    if (userProfile.usesProtectiveClothing) protectionEquipment.push('clothing');
-    
-    // Determine medical history
-    const medicalHistory = [];
-    if (selectedRiskFactors.includes('respiratoryHistory')) medicalHistory.push('respiratory');
-    if (selectedRiskFactors.includes('skinHistory')) medicalHistory.push('skin');
-    
-    // Input for prediction
-    const predictionInput = {
-      age: userProfile.age,
-      yearsInAgriculture: userProfile.yearsInAgriculture,
-      workHoursPerDay: userProfile.workHoursPerDay,
-      exposures,
-      protectionEquipment,
-      medicalHistory
-    };
-    
-    // Get prediction result
-    const result = predictRisks(predictionInput, data);
-    setPredictionResult(result);
-  };
-
-  // Toggle a risk factor selection
-  const toggleRiskFactor = (factor: string) => {
-    setSelectedRiskFactors(prev => {
-      if (prev.includes(factor)) {
-        return prev.filter(f => f !== factor);
-      } else {
-        return [...prev, factor];
-      }
-    });
-  };
-
-  // Get risk level label based on score
-  const getRiskLevel = (score: number): string => {
-    if (score < 30) return "Faible (Low)";
-    if (score < 50) return "Modéré (Moderate)";
-    if (score < 70) return "Élevé (High)";
-    return "Très élevé (Very High)";
-  };
-
-  // Get risk color based on score
-  const getRiskColor = (score: number): string => {
-    if (score < 30) return "#4caf50"; // Green
-    if (score < 50) return "#ff9800"; // Orange
-    if (score < 70) return "#f44336"; // Red
-    return "#9c27b0"; // Purple for very high
-  };
-
-  // Handle profile changes
-  const handleProfileChange = (field: string, value: any) => {
-    setUserProfile(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
 
   // Prepare text risk factors for Enhanced Tool
   const textRiskFactors = [
@@ -165,7 +101,31 @@ function App() {
         
         {/* Content */}
         <div className="flex-1 p-6 overflow-auto">
-          {/* All other tabs remain the same */}
+          {activeTab === 'overview' && (
+            <div className="bg-white p-4 rounded-lg shadow-md animate-fade-in">
+              <Overview />
+            </div>
+          )}
+          {activeTab === 'health-outcomes' && (
+            <div className="bg-white p-4 rounded-lg shadow-md animate-fade-in">
+              <HealthOutcomes />
+            </div>
+          )}
+          {activeTab === 'exposures' && (
+            <div className="bg-white p-4 rounded-lg shadow-md animate-fade-in">
+              <Exposures />
+            </div>
+          )}
+          {activeTab === 'protection' && (
+            <div className="bg-white p-4 rounded-lg shadow-md animate-fade-in">
+              <Protection />
+            </div>
+          )}
+          {activeTab === 'analytics' && (
+            <div className="bg-white p-4 rounded-lg shadow-md animate-fade-in">
+              <Analytics />
+            </div>
+          )}
           {activeTab === 'prediction' && (
             <div className="bg-white p-4 rounded-lg shadow-md animate-fade-in">
               <EnhancedRiskPredictionTool 

@@ -2,8 +2,13 @@ import React, { useState, useEffect } from 'react';
 import TextAnalysisComponent from './TextAnalysisComponent';
 import RiskPredictionTool from './RiskPredictionTool';
 import EnhancedRiskPredictionTool from './EnhancedRiskPredictionTool';
+import Overview from './Overview';
+import HealthOutcomes from './HealthOutcomes';
+import Exposures from './Exposures';
+import Protection from './Protection';
+import Analytics from './Analytics';
 import { loadData } from '../services/DataService';
-import * as XLSX from 'xlsx'; // Import XLSX directly as well for fallback
+import * as XLSX from 'xlsx';
 import { HealthRecord, RiskFactor } from '../types';
 
 interface DashboardContentProps {
@@ -21,12 +26,10 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Try to load the file using window.fs if available, otherwise fallback to fetch API
         let arrayBuffer;
         
         if (typeof window !== 'undefined' && 'fs' in window && window.fs) {
           try {
-            // Use window.fs to load the fixed_female_farmers_data.xlsx file
             const fileBuffer = await window.fs.readFile('fixed_female_farmers_data.xlsx');
             if (fileBuffer instanceof Uint8Array) {
               arrayBuffer = fileBuffer.buffer;
@@ -35,20 +38,16 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
             }
           } catch (fsError) {
             console.warn('Error reading with window.fs:', fsError);
-            // Fallback to fetch API
             const response = await fetch('fixed_female_farmers_data.xlsx');
             arrayBuffer = await response.arrayBuffer();
           }
         } else {
-          // window.fs not available, use fetch API
           const response = await fetch('fixed_female_farmers_data.xlsx');
           arrayBuffer = await response.arrayBuffer();
         }
         
-        // Process the data using XLSX directly
         let workbook;
         try {
-          // Try dynamic import first
           const XLSXModule = await import('xlsx');
           workbook = XLSXModule.read(new Uint8Array(arrayBuffer), {
             type: 'array',
@@ -58,7 +57,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
           });
         } catch (importError) {
           console.warn('Dynamic import failed, using static import:', importError);
-          // Fallback to static import
           workbook = XLSX.read(new Uint8Array(arrayBuffer), {
             type: 'array',
             cellDates: true,
@@ -67,7 +65,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
           });
         }
         
-        // Validate workbook data
         if (!workbook || !workbook.SheetNames || workbook.SheetNames.length === 0) {
           console.warn('Invalid workbook data, using sample data');
           const sampleData = await loadData('sample');
@@ -75,22 +72,17 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
           return;
         }
         
-        // Get first sheet
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         
-        // Convert to JSON
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
-          defval: '', // Default value for empty cells
-          raw: false  // Convert values to string
+          defval: '',
+          raw: false
         });
         
-        // Process the data to ensure all needed fields are properly formatted
         const processedData = jsonData.map((record: Record<string, unknown>): HealthRecord => {
-          // Create a new record of the correct type
           const processedRecord: HealthRecord = {};
 
-          // Copy numeric fields
           if (typeof record['N°'] !== 'undefined') processedRecord['N°'] = Number(record['N°']);
           if (typeof record['Age'] !== 'undefined') processedRecord['Age'] = Number(record['Age']);
           if (typeof record['Nb enfants'] !== 'undefined') processedRecord['Nb enfants'] = Number(record['Nb enfants']);
@@ -100,7 +92,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
           if (typeof record['TAS'] !== 'undefined') processedRecord['TAS'] = Number(record['TAS']);
           if (typeof record['TAD'] !== 'undefined') processedRecord['TAD'] = Number(record['TAD']);
           
-          // Copy string fields
           if (typeof record['Situation maritale'] !== 'undefined') processedRecord['Situation maritale'] = String(record['Situation maritale']);
           if (typeof record['Niveau socio-économique'] !== 'undefined') processedRecord['Niveau socio-économique'] = String(record['Niveau socio-économique']);
           if (typeof record['Statut'] !== 'undefined') processedRecord['Statut'] = String(record['Statut']);
@@ -110,7 +101,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
           if (typeof record['Casquette/Mdhalla'] !== 'undefined') processedRecord['Casquette/Mdhalla'] = String(record['Casquette/Mdhalla']);
           if (typeof record['Manteau imperméable'] !== 'undefined') processedRecord['Manteau imperméable'] = String(record['Manteau imperméable']);
           
-          // Ensure health issue fields are strings
           ['Troubles cardio-respiratoires', 'Troubles cognitifs', 
            'Troubles neurologiques', 'Troubles cutanés/phanères', 
            'Autres plaintes'].forEach(field => {
@@ -122,7 +112,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
             }
           });
           
-          // Ensure chemical fields are strings
           ['Produits chimiques utilisés', 'Engrais utilisés', 
            'Produits biologiques utilisés'].forEach(field => {
             const value = record[field];
@@ -133,7 +122,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
             }
           });
           
-          // Ensure task field is a string
           const taskField = 'Tâches effectuées';
           const taskValue = record[taskField];
           if (taskValue === undefined || taskValue === null) {
@@ -148,7 +136,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
         setData(processedData);
       } catch (error) {
         console.error('Error loading data:', error);
-        // Fallback to sample data in case of error
         setData([
           {
             "N°": 1,
@@ -207,16 +194,13 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
     fetchData();
   }, []);
 
-  // Callback for receiving risk factors from text analysis
   const handleRiskFactorsGenerated = (factors: RiskFactor[]) => {
     setTextRiskFactors(factors);
-    // If we have at least one risk factor, select the first one for highlighting
     if (factors.length > 0) {
       setSelectedRiskFactor(factors[0]);
     }
   };
   
-  // Handle clicking on a risk factor in the text analysis component
   const handleRiskFactorSelect = (factor: RiskFactor) => {
     setSelectedRiskFactor(factor);
   };
@@ -226,105 +210,68 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
-      {/* Text Analysis Section - Takes 1 column on large screens */}
-      <div className="lg:col-span-1">
-        {activeTab === 'ai-prediction' || activeTab === 'analytics' ? (
-          <TextAnalysisComponent 
-            data={data} 
-            onRiskFactorsGenerated={handleRiskFactorsGenerated}
-            onRiskFactorSelected={handleRiskFactorSelect}
-          />
-        ) : null}
-      </div>
-      
-      {/* Risk Prediction Tool - Takes 2 columns on large screens */}
-      <div className="lg:col-span-2">
-        {activeTab === 'ai-prediction' && (
-          <>
-            <div className="flex justify-end mb-2">
-              <label className="inline-flex items-center cursor-pointer">
-                <span className="mr-2 text-sm font-medium text-gray-700">
-                  {useEnhancedTool ? 'Outil avancé' : 'Outil standard'}
-                </span>
-                <div className="relative">
-                  <input 
-                    type="checkbox" 
-                    checked={useEnhancedTool}
-                    onChange={() => setUseEnhancedTool(!useEnhancedTool)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                </div>
-              </label>
-            </div>
-
-            <EnhancedRiskPredictionTool 
+    <>
+      {(activeTab === 'ai-prediction' || activeTab === 'analytics') ? (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+          {/* Text Analysis Section - Takes 1 column on large screens */}
+          <div className="lg:col-span-1">
+            <TextAnalysisComponent 
               data={data} 
-              textRiskFactors={textRiskFactors}
-              highlightedRiskFactor={selectedRiskFactor}
+              onRiskFactorsGenerated={handleRiskFactorsGenerated}
+              onRiskFactorSelected={handleRiskFactorSelect}
             />
-          </>
-        )}
-        
-        {activeTab === 'analytics' && (
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-4">Visualisations</h2>
-            <p>Cet onglet contiendra vos visualisations basées sur l'analyse PCA/MCA.</p>
-            {/* You'll add your PCA/MCA visualization components here */}
           </div>
-        )}
-        
-        {activeTab === 'exposures' && (
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-4">Analyses des Expositions</h2>
-            <p>Cet onglet contiendra vos résultats d'analyses sur les expositions chimiques.</p>
-            {/* You'll add your exposure analysis components here */}
-          </div>
-        )}
-        
-        {activeTab === 'health-outcomes' && (
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-4">Résultats de Santé</h2>
-            <p>Cet onglet présentera les analyses des problèmes de santé observés.</p>
-            {/* You'll add your health outcomes components here */}
-          </div>
-        )}
+          
+          {/* Main Content - Takes 2 columns on large screens */}
+          <div className="lg:col-span-2">
+            {activeTab === 'ai-prediction' && (
+              <>
+                <div className="flex justify-end mb-2">
+                  <label className="inline-flex items-center cursor-pointer">
+                    <span className="mr-2 text-sm font-medium text-gray-700">
+                      {useEnhancedTool ? 'Outil avancé' : 'Outil standard'}
+                    </span>
+                    <div className="relative">
+                      <input 
+                        type="checkbox" 
+                        checked={useEnhancedTool}
+                        onChange={() => setUseEnhancedTool(!useEnhancedTool)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </div>
+                  </label>
+                </div>
 
-        {activeTab === 'protection' && (
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-4">Équipements de Protection</h2>
-            <p>Cet onglet présentera les analyses sur l'utilisation d'équipements de protection.</p>
-            {/* You'll add your protection equipment analysis here */}
+                {useEnhancedTool ? (
+                  <EnhancedRiskPredictionTool 
+                    data={data} 
+                    textRiskFactors={textRiskFactors}
+                    highlightedRiskFactor={selectedRiskFactor}
+                  />
+                ) : (
+                  <RiskPredictionTool 
+                    data={data} 
+                    textRiskFactors={textRiskFactors}
+                  />
+                )}
+              </>
+            )}
+            
+            {activeTab === 'analytics' && (
+              <Analytics />
+            )}
           </div>
-        )}
-
-        {activeTab === 'overview' && (
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-4">Aperçu Général</h2>
-            <p>Bienvenue dans le tableau de bord de santé agricole. Utilisez les onglets pour explorer les différentes analyses.</p>
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              <div className="border p-3 rounded bg-blue-50">
-                <h3 className="font-bold">Problèmes de Santé</h3>
-                <p className="text-sm">Analyse des troubles cardio-respiratoires, neurologiques, cognitifs et cutanés.</p>
-              </div>
-              <div className="border p-3 rounded bg-green-50">
-                <h3 className="font-bold">Expositions</h3>
-                <p className="text-sm">Analyse des expositions aux produits chimiques et biologiques.</p>
-              </div>
-              <div className="border p-3 rounded bg-yellow-50">
-                <h3 className="font-bold">Protection</h3>
-                <p className="text-sm">Analyse de l'utilisation d'équipements de protection.</p>
-              </div>
-              <div className="border p-3 rounded bg-purple-50">
-                <h3 className="font-bold">Prédiction IA</h3>
-                <p className="text-sm">Outil de prédiction des risques basé sur l'analyse de texte.</p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+        </div>
+      ) : (
+        <div className="mt-4">
+          {activeTab === 'overview' && <Overview />}
+          {activeTab === 'health-outcomes' && <HealthOutcomes />}
+          {activeTab === 'exposures' && <Exposures />}
+          {activeTab === 'protection' && <Protection />}
+        </div>
+      )}
+    </>
   );
 };
 
