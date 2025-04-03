@@ -259,18 +259,11 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ activeTab }) => {
               </label>
             </div>
 
-            {useEnhancedTool ? (
-              <EnhancedRiskPredictionTool 
-                data={data} 
-                textRiskFactors={textRiskFactors}
-                highlightedRiskFactor={selectedRiskFactor}
-              />
-            ) : (
-              <RiskPredictionTool 
-                data={data} 
-                textRiskFactors={textRiskFactors} 
-              />
-            )}
+            <EnhancedRiskPredictionTool 
+              data={data} 
+              textRiskFactors={textRiskFactors}
+              highlightedRiskFactor={selectedRiskFactor}
+            />
           </>
         )}
         

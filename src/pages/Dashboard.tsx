@@ -4,7 +4,7 @@ import FilterBar from '../components/FilterBar';
 import DashboardContent from '../components/DashboardContent';
 
 const Dashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<string>('overview');
+  const [activeTab, setActiveTab] = useState<string>('ai-prediction');
 
   return (
     <div className="flex h-screen bg-gray-100">
