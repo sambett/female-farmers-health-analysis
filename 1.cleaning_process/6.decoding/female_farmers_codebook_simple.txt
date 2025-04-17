@@ -1,0 +1,127 @@
+FEMALE FARMERS DATASET CODEBOOK
+===============================
+
+Created on: 2025-03-28
+Dataset dimensions: 80 rows × 74 columns
+
+VARIABLE ENCODINGS
+-----------------
+
+1. Binary Variables (float: 1.0='oui', 0.0='non', NaN=missing):
+   - Neffa
+   - Fumées de Tabouna
+   - AT en milieu agricole
+   - Ménopause
+
+2. Tabagisme (special encoding, float: 0.0='non', 1.0='passif', 2.0='oui', NaN=missing):
+   - Tabagisme
+
+3. Equipment Usage (ordinal, float: 0.0='jamais', 1.0='parfois', 2.0='souvent', 3.0='toujours', NaN=missing):
+   - Masque pour pesticides
+   - Bottes
+   - Gants
+   - Casquette/Mdhalla
+   - Manteau imperméable
+
+4. Profession (ordinal, float, NaN=missing):
+   - Catégorie professionnelle:
+     - agricultrice indépendante → 0.0
+     - ouvrière → 1.0
+     - ouvrière, agricultrice indépendante → 2.0
+     - pêcheur indépendante → 3.0
+
+5. Categorical Variables (ordinal encoding, float, NaN=missing):
+   - Situation maritale:
+     - célibataire → 0.0
+     - mariée → 1.0
+     - divorcée → 2.0
+     - veuve → 3.0
+   - Domicile:
+     - monastir → 0.0
+     - sfax → 1.0
+     - mahdia → 2.0
+   - Niveau socio-économique:
+     - bas → 0.0
+     - moyen → 1.0
+     - bon → 2.0
+   - Statut:
+     - permanente → 0.0
+     - saisonnière → 1.0
+   - Niveau scolaire:
+     - analphabète → 0.0
+     - primaire → 1.0
+     - secondaire → 2.0
+     - supérieur → 3.0
+
+6. Multi-value Indicators (float: 1.0=present, 0.0=absent, NaN=original missing):
+   - Produits chimiques utilisés (prefix: Chemical):
+     - Chemical_engrais_chimiques (1.0 = contains 'engrais chimiques')
+     - Chemical_pesticides (1.0 = contains 'pesticides')
+   - Produits biologiques utilisés (prefix: Bio):
+     - Bio_animaux (1.0 = contains 'animaux')
+     - Bio_engrais_naturels (1.0 = contains 'engrais naturels')
+   - Engrais utilisés (prefix: Fertilizer):
+     - Fertilizer_chimique (1.0 = contains 'chimique')
+     - Fertilizer_organique (1.0 = contains 'organique')
+     - Fertilizer_organo_minéral (1.0 = contains 'organo minéral')
+   - Contraintes thermiques (prefix: Thermal):
+     - Thermal_chaleur (1.0 = contains 'chaleur')
+     - Thermal_froid (1.0 = contains 'froid')
+   - Moyen de transport (prefix: Transport):
+     - Transport_a_pieds (1.0 = contains 'a pieds')
+     - Transport_bus___transport_public (1.0 = contains 'bus   transport public')
+     - Transport_camion_non_protégé (1.0 = contains 'camion non protégé')
+     - Transport_charette (1.0 = contains 'charette')
+     - Transport_charrette (1.0 = contains 'charrette')
+     - Transport_voiture (1.0 = contains 'voiture')
+
+7. One-hot Encoded Variables (int: 0 or 1):
+   - Profession du mari:
+     - Profession du mari_a l'étranger (1 = 'a l'étranger')
+     - Profession du mari_agriculteur (1 = 'agriculteur')
+     - Profession du mari_chauffeur de louage (1 = 'chauffeur de louage')
+     - Profession du mari_chauffeur de taxi (1 = 'chauffeur de taxi')
+     - Profession du mari_chômeur (1 = 'chômeur')
+     - Profession du mari_directeur (1 = 'directeur')
+     - Profession du mari_douanier retraité (1 = 'douanier retraité')
+     - Profession du mari_handicapé (1 = 'handicapé')
+     - Profession du mari_infirmier retraité (1 = 'infirmier retraité')
+     - Profession du mari_instituteur + agriculteur (1 = 'instituteur + agriculteur')
+     - Profession du mari_maintenance hotel (1 = 'maintenance hotel')
+     - Profession du mari_marbrier hotel (1 = 'marbrier hotel')
+     - Profession du mari_marin (1 = 'marin')
+     - Profession du mari_maçon (1 = 'maçon')
+     - Profession du mari_menuisier (1 = 'menuisier')
+     - Profession du mari_mécanicien (1 = 'mécanicien')
+     - Profession du mari_ouvrier (1 = 'ouvrier')
+     - Profession du mari_ouvrier agricole (1 = 'ouvrier agricole')
+     - Profession du mari_ouvrier journalier (1 = 'ouvrier journalier')
+     - Profession du mari_policier (1 = 'policier')
+     - Profession du mari_policier retraité (1 = 'policier retraité')
+     - Profession du mari_pompiste (1 = 'pompiste')
+     - Profession du mari_professeur (1 = 'professeur')
+     - Profession du mari_professeur dans un collège (1 = 'professeur dans un collège')
+     - Profession du mari_pêcheur (1 = 'pêcheur')
+     - Profession du mari_rien (1 = 'rien')
+     - Profession du mari_tissage (1 = 'tissage')
+     - Profession du mari_nan (1 = missing value)
+
+MISSING VALUE HANDLING
+---------------------
+
+- For binary, ordinal, and numerical columns: NaN indicates missing values
+- For multi-value indicators: if all indicators for a group are NaN, the original value was missing
+- For one-hot encoded variables: missingness is indicated by the _nan column being 1
+
+DECODING INSTRUCTIONS
+--------------------
+
+To decode after imputation:
+
+1. For binary variables: map 1.0→'oui', 0.0→'non', NaN→missing
+2. For Tabagisme: map 0.0→'non', 1.0→'passif', 2.0→'oui', NaN→missing
+3. For ordinal equipment: map 0.0→'jamais', 1.0→'parfois', 2.0→'souvent', 3.0→'toujours', NaN→missing
+4. For profession: map reverse of profession mapping, NaN→missing
+5. For ordinal categorical variables: use the reverse of the mappings shown above, NaN→missing
+6. For one-hot encoded variables: column with value 1 indicates category, if *_nan=1 then missing
+7. For multi-value indicators: collect values where indicator=1.0, if all NaN then original was missing

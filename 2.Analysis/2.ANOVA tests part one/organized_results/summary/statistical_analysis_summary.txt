@@ -1,0 +1,22 @@
+# Statistical Analysis Summary
+
+Date: 2025-04-01
+Dataset: Female Farmers Health Study
+Sample Size: 80
+
+## Significant Findings
+
+1. ANOVA: Children_Category has a significant effect on protection scores (p=0.0477)
+2. Correlation: Poids and BMI are significantly correlated (r=0.91, p=0.0000)
+3. Correlation: Age and Ancienneté agricole are significantly correlated (r=0.68, p=0.0000)
+
+## Analysis Methods
+
+The following statistical analyses were performed:
+- Chi-square tests for independence between categorical variables
+- T-tests for comparing means between groups
+- ANOVA tests for comparing means across multiple categories
+- Correlation analysis for numerical variables
+- Risk ratio calculations for binary risk factors
+- Logistic regression for predicting health complaints
+- Linear regression for predicting protection scores

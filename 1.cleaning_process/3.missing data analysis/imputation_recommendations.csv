@@ -1,0 +1,20 @@
+,Missing %,Mechanism,Recommended Strategy
+Age ménopause,63.7,MAR (strong),Conditional imputation: Only impute for women with Ménopause=1
+Chemical,51.2,MCAR,Consider dropping or using as an auxiliary variable only
+Thermal,42.5,MCAR,Mode imputation
+Bio,38.8,MCAR,Mode imputation
+Nb pers à charge,37.5,MAR (moderate),Multiple Imputation (MICE) or Predictive Mean Matching
+Niveau socio-économique,33.8,MAR (weak),Mode imputation with predictors or KNN
+Profession du mari,28.7,MAR (weak),Mode imputation with predictors or KNN
+Fertilizer,20.0,MCAR,Mode imputation
+Statut,10.0,Unknown,Mode imputation or KNN
+J travail / Sem,5.0,Unknown,Multiple Imputation (MICE) - conservative approach
+Age,3.8,Unknown,Multiple Imputation (MICE) - conservative approach
+H travail / jour,3.8,Unknown,Multiple Imputation (MICE) - conservative approach
+Ancienneté agricole,3.8,Unknown,Multiple Imputation (MICE) - conservative approach
+Neffa,2.5,Unknown,Mode imputation or KNN
+Niveau scolaire,2.5,Unknown,Mode imputation or KNN
+Nb enfants,1.2,Unknown,Multiple Imputation (MICE) - conservative approach
+Situation maritale,1.2,Unknown,Mode imputation or KNN
+Fumées de Tabouna,1.2,Unknown,Mode imputation or KNN
+Transport,1.2,Unknown,Mode imputation or KNN

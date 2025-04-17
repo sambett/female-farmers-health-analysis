@@ -1,10 +1,7 @@
 @echo off
-echo Starting Agricultural Health Dashboard Frontend...
+echo Starting frontend development server...
 
-REM Set the entry point to the simplified version
-set VITE_ENTRY_POINT=src/main.simplified.tsx
+cd frontend
+call npm run dev
 
-REM Run the development server using direct path to vite
-call node_modules\.bin\vite
-
-pause
+echo Frontend server stopped.

@@ -1,0 +1,12 @@
+Mécanisme AT,Count,Percentage
+pas d'accident,54,67.5
+chute,12,15.0
+coupure,5,6.25
+morsure chien,2,2.5
+trajet,1,1.25
+chute vache,1,1.25
+"morsure chien, coupure",1,1.25
+"morsure chien, coupure, chute",1,1.25
+non spécifié,1,1.25
+"morsute chien, coupure",1,1.25
+coup de soleil,1,1.25

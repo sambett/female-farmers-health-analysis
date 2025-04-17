@@ -1,0 +1,23 @@
+# Set default behavior to automatically normalize line endings
+* text=auto
+
+# Explicitly declare text files
+*.js text
+*.jsx text
+*.ts text
+*.tsx text
+*.json text
+*.html text
+*.css text
+*.md text
+*.py text
+*.bat text eol=crlf
+
+# Denote binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.xlsx binary
+*.pdf binary

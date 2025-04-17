@@ -10,19 +10,18 @@ The dashboard analyzes data from female farmers to understand occupational risks
 
 ### Quick Start
 
-Use the included batch files to run the application:
+1. **Initial Setup**:
+   - Run `setup.bat` to install all dependencies
+   - This sets up both frontend and backend environments
 
-1. **Development Server**:
-   - Double-click `dev.bat` or run it from the command line
-   - This will start the development server at http://localhost:5173
+2. **Run the Application**:
+   - Run `run_app.bat` to start both frontend and backend servers
+   - The frontend will be available at http://localhost:5173
+   - The backend API will be available at http://localhost:8000
 
-2. **Build for Production**:
-   - Double-click `build.bat` or run it from the command line
-   - This will create optimized files in the `dist` directory
-
-3. **Run the Backend** (required for risk prediction tool):
-   - Navigate to the `backend` directory
-   - Run `setup_and_run.bat`
+3. **Individual Components**:
+   - **Frontend Only**: Run `run_frontend.bat` 
+   - **Backend Only**: Run `run_backend.bat`
 
 ### Manual Commands
 
@@ -43,15 +42,37 @@ npm run preview
 
 - Statistical analysis of health data
 - Visual analytics and dashboard
-- Risk prediction tool
+- Risk prediction tool with ML models
 - Comparative analysis of worker profiles
 - Regional pattern identification
+- Text analysis of agricultural descriptions
+- What-if scenarios for intervention planning
 
 ## Tech Stack
 
-- React 19
-- TypeScript
-- Vite
-- Material UI
-- TensorFlow.js for machine learning
-- Recharts for data visualization
+- **Frontend**: React, TypeScript, Vite, TailwindCSS, Material UI, Recharts
+- **Backend**: Python, FastAPI, scikit-learn, NLTK
+- **Data Processing**: Pandas, NumPy, SciPy
+- **Machine Learning**: Random Forest model for risk prediction
+
+## Project Structure
+
+- `frontend/` - Frontend React application
+  - `src/` - React components, services, and TypeScript code
+  - `public/` - Static assets
+- `backend/` - Python backend for the risk prediction API
+  - `app/` - FastAPI application code
+  - `model_data/` - Trained ML models
+- `data/` - Dataset files
+- `Analysis/` - Data analysis and modeling notebooks
+- `cleaning_process/` - Data cleaning and preprocessing pipeline
+- `farmers report/` - Analysis reports and documentation
+
+## Predictive Model
+
+The system uses a hybrid approach combining Random Forest machine learning with domain knowledge for agricultural risk prediction. The model provides:
+
+- Overall and domain-specific risk scores (respiratory, skin, neurological)
+- Personalized recommendations for risk reduction
+- What-if scenarios to explore intervention impacts
+- Text analysis capabilities for natural language input

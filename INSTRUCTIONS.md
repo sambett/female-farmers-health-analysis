@@ -7,23 +7,22 @@ Follow these simple steps to run the application:
 ### Building and Running the Frontend
 
 1. **Build the application** (creates production files):
-   - Double-click on `build.bat` in the project folder
-   - The build process will create optimized files in the `dist` directory
+   - Run `frontend/npm run build`
+   - The build process will create optimized files in the `frontend/dist` directory
 
 2. **Run the development server** (for development):
-   - Double-click on `dev.bat` in the project folder
+   - Run `run_frontend.bat`
    - The server will start at http://localhost:5173
    - Any changes you make to the code will be automatically reflected
 
 ### Running the Backend (Required for Risk Prediction)
 
-1. Navigate to the `backend` folder
-2. Double-click on `setup_and_run.bat`
-3. The backend server will start at http://localhost:8000
+1. Run `run_backend.bat`
+2. The backend server will start at http://localhost:8000
 
 ### Running Everything at Once
 
-- Double-click on `run_all.bat` to start both frontend and backend servers
+- Run `run_app.bat` to start both frontend and backend servers
 
 ## Troubleshooting
 
@@ -43,11 +42,12 @@ If you encounter problems with the build or running the application:
 
 ## Project Structure
 
-- `src/` - Frontend source code (React components, services, etc.)
+- `frontend/` - Frontend React application (components, services, etc.)
 - `backend/` - Python backend for the risk prediction API
-- `dist/` - Built application (created after running build.bat)
-- `public/` - Static assets
-- `Analysis/` - Data analysis scripts and notebooks
+- `data/` - Dataset files
+- `Analysis/` - Data analysis and model scripts
+- `cleaning_process/` - Data cleaning and preprocessing pipeline
+- `farmers report/` - Analysis reports and documentation
 
 ## Contact for Support
 
