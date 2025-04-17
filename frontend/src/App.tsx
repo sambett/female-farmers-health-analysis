@@ -8,6 +8,7 @@ import HealthOutcomes from './components/HealthOutcomes';
 import Exposures from './components/Exposures';
 import Protection from './components/Protection';
 import Analytics from './components/Analytics';
+import KeyInsights from './components/KeyInsights';
 
 function App() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -77,6 +78,7 @@ function App() {
           <nav className="p-4 space-y-2">
             {[
               { id: 'overview', name: 'Overview', icon: '📊' },
+              { id: 'insights', name: 'Key Insights', icon: '💡' },
               { id: 'health-outcomes', name: 'Health Outcomes', icon: '🏥' },
               { id: 'exposures', name: 'Exposures', icon: '⚗️' },
               { id: 'protection', name: 'Protection', icon: '🛡️' },
@@ -104,6 +106,11 @@ function App() {
           {activeTab === 'overview' && (
             <div className="bg-white p-4 rounded-lg shadow-md animate-fade-in">
               <Overview />
+            </div>
+          )}
+          {activeTab === 'insights' && (
+            <div className="bg-white p-4 rounded-lg shadow-md animate-fade-in">
+              <KeyInsights />
             </div>
           )}
           {activeTab === 'health-outcomes' && (

@@ -12,40 +12,41 @@ const Analytics: React.FC = () => {
       icon: <LineChartOutlined className="text-blue-600 text-3xl" />,
       title: "Multivariate Analysis Insights",
       details: [
-        "Principal Component Analysis (PCA) revealed 4 key dimensions",
-        "63% of variance explained by key numerical variables",
-        "Age and experience strongly correlate with health outcomes",
-        "Family structure impacts occupational risk profiles"
+        "Principal Component Analysis (PCA) revealed 4 key dimensions capturing 63.1% of total variance",
+        "PC1 (23.6%): Age/Experience Factor - captures age (loading 0.87) and experience (loading 0.77)",
+        "PC2 (16.1%): Family Structure Factor - captures number of children and dependents",
+        "PC3 (13.5%): Cardiovascular Health Factor - blood pressure indicators",
+        "PC4 (9.9%): Work Intensity Factor - hours and days worked"
       ]
     },
     {
       icon: <PieChartOutlined className="text-green-600 text-3xl" />,
       title: "Cluster Analysis Findings",
       details: [
-        "Identified 10 distinct worker risk clusters through MCA",
-        "4 primary worker profiles based on PCA dimensions",
-        "Significant variations in health and protection behaviors",
-        "Regional and socioeconomic factors create unique risk patterns"
+        "Identified 10 distinct worker risk clusters through MCA explaining 25.5% variance in first two dimensions",
+        "4 primary worker profiles based on PCA dimensions with silhouette score of 0.68",
+        "High-Risk Profiles (50% of sample) with 91-100% permanent workers and 73-92% never using masks",
+        "Moderate-Protection Profiles (35%) and Higher-Protection Profiles (15%) with distinct patterns"
       ]
     },
     {
       icon: <BarChartOutlined className="text-purple-600 text-3xl" />,
       title: "Correlation and Risk Mapping",
       details: [
-        "Strong correlations between age, work experience, and health risks",
-        "Protection behaviors show complex relationship with demographics",
-        "Socioeconomic status significantly modulates health outcomes",
-        "Cultural practices create additional risk dimensions"
+        "Strong correlations between age and experience (r=0.68, p{'<'}0.001), age and systolic pressure (r=0.44, p{'<'}0.001)",
+        "BMI strongly associated with age groups (p=0.028) and walking as transportation (p=0.037)",
+        "Children impact protection (p=0.048, F=2.76), most significant demographic factor",
+        "Traditional Tabouna smoke exposure correlates with respiratory issues (p=0.029)"
       ]
     },
     {
       icon: <CloudOutlined className="text-red-600 text-3xl" />,
       title: "Advanced Statistical Techniques",
       details: [
-        "Multiple Correspondence Analysis (MCA) uncovered hidden patterns",
-        "Integration of quantitative and categorical variable analysis",
-        "Developed predictive risk profiling methodology",
-        "Identified compound risk factors across multiple dimensions"
+        "Multiple Correspondence Analysis (MCA) uncovered 10 significant dimensions with two explaining 25.5% variance",
+        "Integrated ANOVA analysis confirmed significant differences in protection by demographic (p{'<'}0.05)",
+        "Machine learning risk model achieves robust prediction using hybrid knowledge-enhanced approach",
+        "Cross-validated statistical findings with 5-fold validation for reliability"
       ]
     }
   ];
@@ -53,27 +54,27 @@ const Analytics: React.FC = () => {
   const statisticalMethodsTable = [
     {
       method: "Principal Component Analysis (PCA)",
-      keyFindings: "Identified 4 core health and work dimensions",
-      varianceExplained: "63% of total variance",
-      primaryInsights: "Age, experience, family structure impact health"
+      keyFindings: "Identified 4 core health and work dimensions with eigenvalues {'>'}1",
+      varianceExplained: "63.1% of total numerical variance",
+      primaryInsights: "Age (0.87), experience (0.77), family structure (0.70) strongest loadings"
     },
     {
       method: "Multiple Correspondence Analysis (MCA)",
-      keyFindings: "10 distinct worker risk clusters",
-      varianceExplained: "Categorical variable relationships",
-      primaryInsights: "Regional and socioeconomic risk variations"
+      keyFindings: "10 distinct worker risk clusters with clear separation",
+      varianceExplained: "25.5% variance in first two dimensions",
+      primaryInsights: "Regional profiles: Monastir (65%), Sfax (25%), Mahdia (10%) distinct patterns"
     },
     {
       method: "Cluster Analysis",
-      keyFindings: "4 primary worker profile groups",
-      varianceExplained: "Risk profile differentiation",
-      primaryInsights: "Protection behavior and health risk correlations"
+      keyFindings: "4 primary worker profile groups with silhouette score 0.68",
+      varianceExplained: "Strong cluster separation confirmed",
+      primaryInsights: "Cluster 0 (36.2%): younger, educated; Cluster 1 (30.0%): older, high-intensity"
     },
     {
       method: "Predictive Risk Modeling",
-      keyFindings: "Comprehensive risk assessment framework",
-      varianceExplained: "Multidimensional risk prediction",
-      primaryInsights: "Targeted intervention strategies"
+      keyFindings: "Comprehensive risk assessment using Random Forest Regressor (100 trees, max_depth=10)",
+      varianceExplained: "Feature importance extraction for explainability",
+      primaryInsights: "Children category (p=0.048) and Tabouna exposure (p=0.029) top predictors"
     }
   ];
 

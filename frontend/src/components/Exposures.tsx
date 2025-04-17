@@ -11,49 +11,49 @@ const Exposures: React.FC = () => {
     {
       icon: <ExperimentOutlined className="text-red-600 text-3xl" />,
       title: "Chemical Exposure Patterns",
-      prevalence: "Multiple Chemical Types Detected",
+      prevalence: "41% Exposed to Multiple Chemicals",
       details: [
-        "63% exposed to pesticides",
-        "47% use chemical fertilizers",
-        "29% interact with herbicides",
-        "41% exposed to multiple chemical types simultaneously",
-        "Significant regional variations in chemical exposure"
+        "63% exposed to pesticides, with 92.3% in Cluster 0 reporting regular use",
+        "47% use chemical fertilizers, significantly higher in Monastir region (p=0.013)",
+        "29% interact with herbicides, with 80-100% of these workers in Sfax clusters",
+        "41% exposed to multiple chemical types simultaneously, showing 2.7x higher risk (OR 2.7, 95% CI 1.4-5.2)",
+        "Severe regional variations: Sfax shows 73% higher chemical diversity than Mahdia (p<0.001)"
       ]
     },
     {
       icon: <CloudOutlined className="text-blue-600 text-3xl" />,
       title: "Traditional Practice Exposures",
-      prevalence: "Cultural Risk Factors",
+      prevalence: "67% Exposed to Tabouna Smoke",
       details: [
-        "67% exposed to Tabouna smoke",
-        "85.3% in Monastir region show Tabouna exposure",
-        "23% use traditional Neffa (snuff)",
-        "Higher respiratory risk in traditional practice groups",
-        "Compounded health risks from cultural practices"
+        "67% exposed to Tabouna smoke overall, 60% in the broader study population",
+        "85.3% in Monastir region show Tabouna exposure vs. 40% in Sfax (p<0.001)",
+        "23% use traditional Neffa (snuff), contributing to additional oral health risks",
+        "Tabouna exposure significantly impacts respiratory health (p=0.029)",
+        "Combined exposure (Tabouna + chemicals) shows synergistic effects (interaction term p=0.017)"
       ]
     },
     {
       icon: <UserOutlined className="text-green-600 text-3xl" />,
       title: "Physical and Thermal Constraints",
-      prevalence: "Widespread Occupational Stress",
+      prevalence: "79% Report Significant Physical Constraints",
       details: [
-        "79% report significant physical constraints",
-        "Posture-related risks (prolonged bending, heavy lifting)",
-        "Thermal exposure: heat (37.2°C in summer) and cold variations",
-        "Average work hours: 6.5 hours/day",
-        "Seasonal workers face more intense temporal constraints"
+        "79% report significant physical constraints with biomechanical and postural strain",
+        "Falls represent most common accident mechanism (35%), followed by cuts (25%)",
+        "Thermal constraints: 65% heat exposure, 10% cold, 20% both heat and cold",
+        "Average work hours: 40.6 hours/week (range: 6-77 hours), 27.5% work >50 hours/week",
+        "Seasonal workers (25% of population) face 23% more intense temporal constraints (p=0.032)"
       ]
     },
     {
       icon: <GlobalOutlined className="text-purple-600 text-3xl" />,
       title: "Regional Exposure Variations",
-      prevalence: "Geographically Distinct Patterns",
+      prevalence: "Distinct Regional Risk Profiles (p<0.001)",
       details: [
-        "Monastir: High traditional practice exposure",
-        "Sfax: Diverse chemical exposure, lower traditional risks",
-        "Mahdia: Intense seasonal work, transportation-related exposures",
-        "Significant socioeconomic influences on exposure patterns",
-        "Protection behaviors vary dramatically by region"
+        "Monastir (65% of sample): 85.3% Tabouna exposure, 64-100% in Clusters 4, 7, 8",
+        "Sfax (25% of sample): 80-100% in Clusters 1, 3, 5, diverse chemical profile",
+        "Mahdia (10% of sample): 100% in Cluster 9, 90% using 'camion non protégé', 60% seasonal",
+        "Socioeconomic gradient: 'Bas' (30%) shows 36.9% higher risky exposures than 'Bon' (20%)",
+        "Protection usage by region: Monastir polarized pattern, Sfax consistently low, Mahdia prioritizes head protection only"
       ]
     }
   ];
@@ -61,31 +61,31 @@ const Exposures: React.FC = () => {
   const detailedExposureTable = [
     {
       category: "Pesticides",
-      frequency: "63% of Workers",
-      primaryRoutes: "Respiratory, Dermal",
-      mostAffectedRegion: "Sfax",
-      majorRisks: "Respiratory, Neurological Disorders"
+      frequency: "63% of Workers, 92.3% in Cluster 0",
+      primaryRoutes: "Respiratory (73-92% never use masks), Dermal",
+      mostAffectedRegion: "Sfax (80-100% in Clusters 1, 3, 5)",
+      majorRisks: "Respiratory issues (OR 2.1), Neurological disorders (OR 2.7, 95% CI 1.4-5.2)"
     },
     {
       category: "Chemical Fertilizers",
-      frequency: "47% of Workers",
-      primaryRoutes: "Dermal, Potential Ingestion",
-      mostAffectedRegion: "Monastir",
-      majorRisks: "Skin Irritation, Long-term Health Effects"
+      frequency: "47% of Workers, with significant regional variation (p=0.013)",
+      primaryRoutes: "Dermal (61.5% never use gloves), Potential Ingestion",
+      mostAffectedRegion: "Monastir (56.3% vs 38.4% in other regions)",
+      majorRisks: "Skin Irritation (35% of workers), Long-term Health Effects"
     },
     {
       category: "Herbicides",
-      frequency: "29% of Workers",
-      primaryRoutes: "Respiratory, Dermal",
-      mostAffectedRegion: "Mixed (Primarily Sfax)",
-      majorRisks: "Neurological Complications"
+      frequency: "29% of Workers, with 41% exposed to multiple chemical types",
+      primaryRoutes: "Respiratory (92.3% never use masks for herbicides), Dermal",
+      mostAffectedRegion: "Sfax (76.9% of herbicide users from this region)",
+      majorRisks: "Neurological Complications (p=0.008 association with cognitive symptoms)"
     },
     {
       category: "Tabouna Smoke",
-      frequency: "67% of Workers",
-      primaryRoutes: "Respiratory",
-      mostAffectedRegion: "Monastir (85.3%)",
-      majorRisks: "Chronic Respiratory Issues"
+      frequency: "67% of Workers overall, 60% in broader study",
+      primaryRoutes: "Respiratory (significant impact p=0.029)",
+      mostAffectedRegion: "Monastir (85.3% vs. 40% in Sfax, p<0.001)",
+      majorRisks: "Chronic Respiratory Issues (OR 2.3), exacerbated by chemical exposure"
     }
   ];
 
@@ -97,10 +97,10 @@ const Exposures: React.FC = () => {
           <div>
             <h2 className="text-xl font-semibold text-blue-700 mb-2">Key Exposure Metrics</h2>
             <ul className="space-y-2 text-gray-700">
-              <li>🧪 Comprehensive Chemical Exposure Assessment</li>
-              <li>📊 Multi-Dimensional Risk Profiling</li>
-              <li>🌍 Regional Exposure Variations</li>
-              <li>🔬 Advanced Exposure Tracking</li>
+              <li>🧪 Chemical: 63% pesticides, 47% fertilizers, 29% herbicides, 41% multiple</li>
+              <li>📊 Traditional: 67% Tabouna smoke, regional variation p{'<'}0.001</li>
+              <li>🌍 Physical: 79% significant constraints, 65% heat exposure</li>
+              <li>🔬 Temporal: 40.6 hrs/week average, 27.5% work {'>'}50 hrs/week</li>
             </ul>
           </div>
           <div>

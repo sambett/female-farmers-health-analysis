@@ -11,44 +11,44 @@ const Overview: React.FC = () => {
     {
       icon: <ClusterOutlined className="text-blue-600 text-3xl" />,
       title: "Four Distinct Worker Profiles",
-      description: "Identified through integrated PCA and MCA analysis, ranging from younger workers with better protection to older high-risk workers with minimal safety measures.",
+      description: "Identified through integrated PCA and MCA analysis, capturing 63.1% of total variance in numerical variables, revealing distinct risk profiles.",
       details: [
-        "Enhanced Cluster 0: Younger workers (38.5 years), higher education, better protection",
-        "Enhanced Cluster 1: Older high-intensity workers (59.3 years), extensive agricultural experience",
-        "Enhanced Cluster 2: Elderly high-risk workers (67 years), lowest protection scores",
-        "Enhanced Cluster 3: Mid-age workers with higher family burdens"
+        "Enhanced Cluster 0 (36.2% of sample): Younger workers (38.5 years), higher education (58.6% secondary), better protection (8.5% above average)",
+        "Enhanced Cluster 1 (30.0% of sample): Older workers (59.3 years), extensive experience (27.8 years), higher work intensity (7.3h/day)",
+        "Enhanced Cluster 2 (2.5% of sample): Elderly workers (67 years), 42.5 years experience, severe cardiovascular indicators (GAD 2.02, 91.4% above average)",
+        "Enhanced Cluster 3 (31.2% of sample): Mid-age workers (43.9 years) with higher family burden (3.1 children, 49.2% more dependents)"
       ]
     },
     {
       icon: <SafetyOutlined className="text-green-600 text-3xl" />,
       title: "Age-Experience-Protection Paradox",
-      description: "Contrary to expectations, more experienced workers show lower protection levels and higher health risks.",
+      description: "Contrary to expectations, more experienced workers show lower protection levels (20% lower in older groups) despite higher health vulnerabilities (p=0.048).",
       details: [
-        "Negative correlation between years of experience and protection scores",
-        "Older workers (>50 years) demonstrate 20% lower protection despite higher health vulnerabilities",
-        "Education level more strongly predicts protection behavior than work experience"
+        "Negative correlation between years of experience and protection scores (F-statistic: 0.40, p=0.807)",
+        "Older workers ({'>'}50 years) demonstrate 20% lower protection despite higher cardiovascular risk (TAS 138.3 vs 113.1 mmHg)",
+        "Education level strongly predicts protection (p=0.188), with secondary education showing 13.6% higher protection scores"
       ]
     },
     {
       icon: <ProjectOutlined className="text-purple-600 text-3xl" />,
       title: "Regional and Socioeconomic Variations",
-      description: "Significant differences in occupational health patterns across regions and socioeconomic groups.",
+      description: "Significant differences in occupational health patterns across regions and socioeconomic groups, persisting after controlling for education and economic status.",
       details: [
-        "Monastir: Higher education levels, better protection awareness",
-        "Sfax: Lower protection scores, more diverse chemical exposures",
-        "Mahdia: Higher transportation-related risks, seasonal work patterns",
-        "Socioeconomic status strongly correlates with health and protection behaviors"
+        "Monastir (65% of sample): Higher education levels, polarized protection patterns (very good or very poor)",
+        "Sfax (25% of sample): Lower protection scores, 80-100% in Clusters 1, 3, and 5, higher pesticide exposure",
+        "Mahdia (10% of sample): 100% in Cluster 9, 90% using 'camion non protégé' transportation, 60% seasonal workers",
+        "Socioeconomic status: 'Moyen' (45%) and 'Bas' (30%) showing distinct protection behaviors"
       ]
     },
     {
       icon: <UserOutlined className="text-red-600 text-3xl" />,
       title: "Family and Cultural Dynamics",
-      description: "Family structure and traditional practices significantly impact occupational health risks.",
+      description: "Family structure and traditional practices significantly impact occupational health risks, with number of children being the strongest statistical predictor (p=0.048).",
       details: [
-        "Higher family responsibilities correlate with reduced self-protection",
-        "Tabouna smoke exposure creates additional health risks",
-        "Husband's profession influences wife's protection behaviors",
-        "Motherhood shows potential to reinforce safety awareness"
+        "Higher family responsibilities correlate with reduced self-protection (p=0.048, F-statistic: 2.76)",
+        "Tabouna smoke exposure affects 60% of women, with significant impact on respiratory health (p=0.029)",
+        "Husband's profession significantly influences protection (100% better protection when husband is 'agriculteur')",
+        "Children Category is the most statistically significant determinant of protection behaviors"
       ]
     }
   ];
