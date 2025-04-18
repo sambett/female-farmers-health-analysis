@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import EnhancedRiskPredictionTool from './components/EnhancedRiskPredictionTool';
-import { checkBackendHealth } from './services/ApiService';
+import EnhancedRiskPredictionTool from '../components/EnhancedRiskPredictionTool';
+import { checkBackendHealth } from '../services/ApiService';
 
 function App() {
   const [backendReady, setBackendReady] = useState<boolean>(false);

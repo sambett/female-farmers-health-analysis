@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.simplified'
-import './index.css'
+import '../index.css'
 
 console.log('Simplified main.tsx is running');
 
