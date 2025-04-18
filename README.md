@@ -112,8 +112,6 @@ The project employs a sophisticated hybrid predictive model combining machine le
 ```
 agricultural-health-dashboard/
 ├── backend/                    # Python API server
-│   ├── app/                    # API application code
-│   ├── model_data/             # Trained ML models
 │   └── simple_server.py        # FastAPI server implementation
 ├── data/                       # Data files
 │   ├── female_farmers_data.xlsx # Original dataset
@@ -126,11 +124,8 @@ agricultural-health-dashboard/
 │       └── types/              # TypeScript definitions
 ├── 1.cleaning_process/         # Data preprocessing pipeline
 ├── 2.Analysis/                 # Data analysis scripts
-│   ├── ANOVA/                  # Analysis of variance
-│   ├── Categorical/            # Categorical data analysis
-│   ├── Numerical/              # Numerical data analysis
-│   └── multivariate/           # PCA & MCA analysis
-└── 1.1farmers report/          # Generated analysis reports
+├── 1.1farmers report/          # Generated analysis reports
+└── run_frontend.bat            # Script to run the frontend
 ```
 
 ## 💪 Value & Impact
@@ -146,47 +141,47 @@ This application provides critical insights that can lead to:
 ## 🛠️ Running the Application
 
 ### Prerequisites
-- Python 3.8 or higher
+- Python 3.8 or higher with pip
 - Node.js 16 or higher
 - npm 8 or higher
 
-### Quick Start
-
-1. **Initial Setup**:
-   ```bash
-   setup.bat
-   ```
-   This script creates virtual environments and installs all dependencies for both frontend and backend.
-
-2. **Launch Full Application**:
-   ```bash
-   run_app.bat
-   ```
-   This starts both the frontend and backend servers:
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:8000
-
-3. **Component-Specific Launch**:
-   - Frontend only: `run_frontend.bat`
-   - Backend only: `run_backend.bat`
-
-### Manual Setup (if batch files don't work)
+### Simple Setup Instructions
 
 #### Backend Setup
-```bash
-cd backend
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-python simple_server.py
-```
+1. Install the required Python packages:
+   ```bash
+   pip install fastapi uvicorn pandas scikit-learn numpy nltk
+   ```
+
+2. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+
+3. Run the backend server:
+   ```bash
+   python simple_server.py
+   ```
+
+4. The backend API will be available at http://localhost:8000
 
 #### Frontend Setup
-```bash
-cd frontend
-npm install
-npm run dev
-```
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. The frontend will be available at http://localhost:5173
 
 ### Production Build
 ```bash
