@@ -1,34 +1,35 @@
 @echo off
-echo Agricultural Health Dashboard - Setup Script
+echo Setting up Agricultural Health Dashboard...
 
-echo Installing frontend dependencies...
-cd frontend
-call npm install
-cd ..
-
-echo Setting up Python environment for backend...
+REM Setup Backend
+echo Setting up backend...
 cd backend
-if exist .venv (
-    echo Virtual environment already exists, skipping creation...
-) else (
-    echo Creating virtual environment...
-    python -m venv .venv
-)
 
-echo Activating virtual environment...
-call .venv\Scripts\activate
+REM Create virtual environment
+python -m venv .venv
 
-echo Installing backend dependencies...
+REM Activate virtual environment
+call .venv\Scripts\activate.bat
+
+REM Install backend dependencies
+pip install fastapi uvicorn scikit-learn pandas numpy nltk
 pip install -r requirements.txt
+
+REM Deactivate virtual environment
+call deactivate
+
 cd ..
 
-echo.
-echo Setup complete!
-echo.
-echo To run the application:
-echo - Full application: run_app.bat
-echo - Frontend only: run_frontend.bat
-echo - Backend only: run_backend.bat
-echo.
-echo Press any key to exit...
-pause > nul
+REM Setup Frontend
+echo Setting up frontend...
+cd frontend
+
+REM Install frontend dependencies
+call npm install
+
+cd ..
+
+echo Setup completed! 
+echo - To run the application: run_app.bat
+echo - To run only the backend: run_backend.bat
+echo - To run only the frontend: run_frontend.bat

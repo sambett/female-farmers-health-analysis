@@ -4,8 +4,6 @@
 
 This sophisticated dashboard provides advanced data visualization, statistical analysis, and predictive modeling tools for understanding occupational health risks facing female agricultural workers.
 
-![Dashboard Preview](https://via.placeholder.com/1200x600?text=Female+Farmers+Health+Dashboard)
-
 ## 🌟 Project Overview
 
 This project addresses a critical public health challenge: understanding and mitigating occupational risks faced by female farmers. By analyzing a comprehensive dataset collected from female agricultural workers, we explore the complex relationships between:
@@ -117,22 +115,22 @@ agricultural-health-dashboard/
 │   ├── app/                    # API application code
 │   ├── model_data/             # Trained ML models
 │   └── simple_server.py        # FastAPI server implementation
-├── data/                       # Data files and documentation
+├── data/                       # Data files
 │   ├── female_farmers_data.xlsx # Original dataset
-│   └── The_Codebook.pdf        # Variable documentation
+│   └── fixed_female_farmers_data.xlsx # Processed dataset
 ├── frontend/                   # React application
 │   ├── public/                 # Static assets
 │   └── src/                    # React components & code
 │       ├── components/         # UI components
 │       ├── services/           # API interaction logic
 │       └── types/              # TypeScript definitions
-├── Analysis/                   # Data analysis scripts
-│   ├── ANOVA_Analysis/         # Analysis of variance
-│   ├── Categorical_Variable/   # Categorical data analysis
-│   ├── Numerical_Variable/     # Numerical data analysis
+├── 1.cleaning_process/         # Data preprocessing pipeline
+├── 2.Analysis/                 # Data analysis scripts
+│   ├── ANOVA/                  # Analysis of variance
+│   ├── Categorical/            # Categorical data analysis
+│   ├── Numerical/              # Numerical data analysis
 │   └── multivariate/           # PCA & MCA analysis
-├── cleaning_process/           # Data preprocessing pipeline
-└── reports/                    # Generated analysis reports
+└── 1.1farmers report/          # Generated analysis reports
 ```
 
 ## 💪 Value & Impact
@@ -147,15 +145,20 @@ This application provides critical insights that can lead to:
 
 ## 🛠️ Running the Application
 
+### Prerequisites
+- Python 3.8 or higher
+- Node.js 16 or higher
+- npm 8 or higher
+
 ### Quick Start
 
-1. **Setup Environment**:
+1. **Initial Setup**:
    ```bash
    setup.bat
    ```
-   This installs all dependencies for both frontend and backend.
+   This script creates virtual environments and installs all dependencies for both frontend and backend.
 
-2. **Launch Application**:
+2. **Launch Full Application**:
    ```bash
    run_app.bat
    ```
@@ -167,9 +170,22 @@ This application provides critical insights that can lead to:
    - Frontend only: `run_frontend.bat`
    - Backend only: `run_backend.bat`
 
-### Docker Deployment
+### Manual Setup (if batch files don't work)
+
+#### Backend Setup
 ```bash
-docker-compose up
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+python simple_server.py
+```
+
+#### Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
 ### Production Build
@@ -208,10 +224,9 @@ The project is built on a robust methodological framework:
 
 ## 🌍 Deployment
 
-The frontend is deployed on Vercel, providing a publicly accessible interface:
-- URL: [https://female-farmers-health-analysis.vercel.app/](https://your-project-url.vercel.app/)
+The frontend is deployed on Vercel, providing a publicly accessible interface. For full functionality including the prediction capabilities, the backend API needs to be running locally.
 
-For full functionality including the prediction capabilities, the backend API needs to be running locally or deployed to a separate service.
+**Note**: Since the backend runs locally, the deployed frontend on Vercel will not have full functionality unless connected to a running backend instance.
 
 ## 🔍 Key Insights
 
@@ -233,4 +248,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-*For additional details, please refer to the technical documentation in the `/reports` directory.*
+*For additional details, please refer to the technical documentation in the `1.1farmers report` directory.*
