@@ -9,11 +9,15 @@ import json
 app = FastAPI(title="Agricultural Health Risk Prediction API")
 
 # Add CORS middleware to allow requests from frontend
+import os
+
+frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with your frontend URL
+    allow_origins=[frontend_url],  # Only allow the frontend URL
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 

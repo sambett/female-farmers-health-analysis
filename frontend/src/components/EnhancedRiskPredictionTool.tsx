@@ -10,7 +10,7 @@ import WorkIcon from '@mui/icons-material/Work';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import ScienceIcon from '@mui/icons-material/Science';
 import { HealthRecord, RiskFactor, SpecificRisks, FeatureImportance } from '../types';
-import { predictRisk, predictRiskFromText, extractKeywords } from '../services/ApiService';
+import { predictRisk, predictRiskFromText, extractKeywords, checkBackendHealth, getMockRiskAssessment, useFallbackData } from '../services/ApiService';
 
 interface EnhancedRiskPredictionToolProps {
   data: HealthRecord[];
@@ -186,7 +186,40 @@ const EnhancedRiskPredictionTool: React.FC<EnhancedRiskPredictionToolProps> = ({
     
     setProcessingText(true);
     try {
-      const keywords = await extractKeywords(text, type);
+      // Check if backend is available
+      const shouldUseFallback = await useFallbackData();
+      
+      let keywords;
+      if (shouldUseFallback) {
+        // Use client-side basic text analysis
+        setBackendStatus('error');
+        console.log("Using fallback text analysis");
+        
+        // Simple keyword extraction based on common terms
+        const lowerText = text.toLowerCase();
+        
+        switch (type) {
+          case 'chemical':
+            keywords = ['pesticides', 'herbicides', 'fongicides', 'insecticides', 'engrais chimiques']
+              .filter(term => lowerText.includes(term));
+            break;
+          case 'task':
+            keywords = ['épandage', 'traitement', 'récolte', 'désherbage', 'taille']
+              .filter(term => lowerText.includes(term));
+            break;
+          case 'health':
+            keywords = ['respiratoire', 'cutané', 'allergie', 'mal de tête', 'peau']
+              .filter(term => lowerText.includes(term));
+            break;
+          case 'protection':
+            keywords = ['masque', 'gants', 'bottes', 'casquette', 'manteau']
+              .filter(term => lowerText.includes(term));
+            break;
+        }
+      } else {
+        // Use the backend extraction service
+        keywords = await extractKeywords(text, type);
+      }
       
       switch (type) {
         case 'chemical': 
@@ -221,19 +254,16 @@ const EnhancedRiskPredictionTool: React.FC<EnhancedRiskPredictionToolProps> = ({
   };
 
   const calculateRisk = async () => {
-    if (backendStatus !== 'running') {
-      setError("Le backend n'est pas disponible. Veuillez démarrer le serveur backend.");
-      return;
-    }
-
     setCalculatingRisk(true);
     setError(null);
     
     try {
+      // Check if we should use fallback data
+      const shouldUseFallback = await useFallbackData();
       let result;
       
       if (activeTab === 0) {
-        // Structured input
+        // Structured input data object
         const data = {
           age,
           work_experience: workExperience,
@@ -251,7 +281,15 @@ const EnhancedRiskPredictionTool: React.FC<EnhancedRiskPredictionToolProps> = ({
           employment_status: employmentStatus
         };
         
-        result = await predictRisk(data);
+        if (shouldUseFallback) {
+          console.log("Using fallback risk assessment");
+          setBackendStatus('error');
+          // Use client-side fallback when backend is unavailable
+          result = getMockRiskAssessment(data);
+        } else {
+          // Use backend prediction service
+          result = await predictRisk(data);
+        }
       } else {
         // Free text input
         const data = {
@@ -262,7 +300,31 @@ const EnhancedRiskPredictionTool: React.FC<EnhancedRiskPredictionToolProps> = ({
           protection_text: customProtectiveEquipment
         };
         
-        result = await predictRiskFromText(data);
+        if (shouldUseFallback) {
+          console.log("Using fallback for text analysis");
+          setBackendStatus('error');
+          // For text input, create a simplified data object for the mock assessment
+          const simplifiedData = {
+            age: 35, // Default values
+            work_experience: 5,
+            work_hours_per_day: 8,
+            work_days_per_week: 5,
+            protective_equipment: extractedProtection,
+            chemical_exposure: extractedChemicals,
+            tasks: extractedTasks,
+            has_respiratory_conditions: extractedHealthConditions.some(c => c.includes('respir')),
+            has_skin_conditions: extractedHealthConditions.some(c => c.includes('peau') || c.includes('cutan')),
+            has_chronic_exposure: false,
+            marital_status: 'mariée',
+            number_of_children: 2,
+            socio_economic_status: 'moyen',
+            employment_status: 'permanente'
+          };
+          result = getMockRiskAssessment(simplifiedData);
+        } else {
+          // Use backend text prediction service
+          result = await predictRiskFromText(data);
+        }
       }
       
       // Process the result
@@ -326,12 +388,10 @@ const EnhancedRiskPredictionTool: React.FC<EnhancedRiskPredictionToolProps> = ({
         {backendStatus === 'error' && (
           <Alert severity="warning" className="mb-4">
             <div>
-              <strong>Attention:</strong> Le serveur backend n'est pas disponible. Pour utiliser l'outil de prédiction, veuillez:
-              <ol className="list-decimal pl-5 mt-2">
-                <li>Ouvrir une invite de commande</li>
-                <li>Naviguer vers: <code>C:\Users\SelmaB\Desktop\Project\agricultural-health-dashboard\backend</code></li>
-                <li>Exécuter: <code>setup_and_run.bat</code></li>
-              </ol>
+              <strong>Mode Démonstration:</strong> Le serveur backend n'est pas disponible. L'application fonctionne en mode démonstration avec un modèle local simplement. Les prédictions sont approximatives.
+              <p className="mt-2 text-sm">
+                <em>Note: Pour des résultats plus précis, le modèle complet est disponible en démarrant le serveur Python.</em>
+              </p>
             </div>
           </Alert>
         )}
